@@ -1097,8 +1097,18 @@
                 
                 container.insertAdjacentHTML('beforeend', confirmationHTML);
                 
-                // Scroll vers le haut
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // SCROLL AMÉLIORÉ APRÈS RECONSTRUCTION
+                setTimeout(() => {
+                    const newAlertContainer = document.getElementById('alertContainer');
+                    if (newAlertContainer) {
+                        newAlertContainer.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'start' 
+                        });
+                    } else {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }, 100);
                 
                 // Afficher un message de succès permanent
                 await showAlert('✅ Réservation confirmée ! Un email vous a été envoyé.', 'success', false);
@@ -1136,6 +1146,9 @@
             alert.style.padding = '15px';
             alert.style.marginBottom = '10px';
             alert.style.borderRadius = '8px';
+            alert.style.position = 'relative';
+            alert.style.zIndex = '1000';
+            alert.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
             
             // Créer le contenu du message
             const messageSpan = document.createElement('span');
@@ -1146,7 +1159,7 @@
             if (!autoHide) {
                 const closeBtn = document.createElement('span');
                 closeBtn.innerHTML = '&times;';
-                closeBtn.style.cssText = 'float: right; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 20px;';
+                closeBtn.style.cssText = 'float: right; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 20px; line-height: 20px;';
                 closeBtn.onclick = function() {
                     alert.style.display = 'none';
                 };
@@ -1155,14 +1168,24 @@
             
             alertContainer.appendChild(alert);
             
-            // SCROLL VERS LE HAUT DE LA PAGE avec un petit délai pour que le message soit affiché
+            // SCROLL VERS LE HAUT DE LA PAGE de façon plus agressive
             setTimeout(() => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
+                // Méthode 1 : scroll vers l'élément alertContainer
+                alertContainer.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
                 });
-                resolve(); // Résoudre la Promise après le scroll
-            }, 100);
+                
+                // Méthode 2 : scroll vers le haut de la page (en backup)
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }, 50);
+                
+                resolve();
+            }, 50);
             
             // Auto-hide uniquement si demandé
             if (autoHide) {
