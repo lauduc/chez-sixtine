@@ -328,6 +328,11 @@
                     <div class="options-extras">
                         <strong>Options supplémentaires / Additional options:</strong>
                         <div class="checkbox-group">
+                        <div class="checkbox-group">
+                            <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
+                            <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (9€/p)</label>
+                        </div>
+                        <div class="checkbox-group">
                             <input type="checkbox" class="opt-animal" value="10">
                             <label style="display: inline;">Forfait Animal / Pet fee (10€)</label>
                         </div>
@@ -379,6 +384,11 @@
                     
                     <div class="options-extras">
                         <strong>Options supplémentaires / Additional options:</strong>
+                        <div class="checkbox-group">
+                        <div class="checkbox-group">
+                            <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
+                            <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (9€/p)</label>
+                        </div>
                         <div class="checkbox-group">
                             <input type="checkbox" class="opt-animal" value="10">
                             <label style="display: inline;">Forfait Animal / Pet fee (10€)</label>
@@ -432,6 +442,11 @@
                     <div class="options-extras">
                         <strong>Options supplémentaires / Additional options:</strong>
                         <div class="checkbox-group">
+                        <div class="checkbox-group">
+                            <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
+                            <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (9€/p)</label>
+                        </div>
+                        <div class="checkbox-group">
                             <input type="checkbox" class="opt-animal" value="10">
                             <label style="display: inline;">Forfait Animal / Pet fee (10€)</label>
                         </div>
@@ -484,6 +499,11 @@
                     
                     <div class="options-extras">
                         <strong>Options supplémentaires / Additional options:</strong>
+                        <div class="checkbox-group">
+                        <div class="checkbox-group">
+                            <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
+                            <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (9€/p)</label>
+                        </div>
                         <div class="checkbox-group">
                             <input type="checkbox" class="opt-animal" value="10">
                             <label style="display: inline;">Forfait Animal / Pet fee (10€)</label>
@@ -626,7 +646,7 @@
                 const logement = card.dataset.logement;
                 
                 // Calculer prix à chaque changement
-                card.querySelectorAll('.date-arrivee, .date-depart, .nb-personnes, .opt-animal, .opt-repas, .opt-bebe').forEach(el => {
+                card.querySelectorAll('.date-arrivee, .date-depart, .nb-personnes, .opt-petitdej, .opt-animal, .opt-repas, .opt-bebe').forEach(el => {
                     el.addEventListener('change', () => calculatePrice(card, logement));
                     el.addEventListener('input', () => calculatePrice(card, logement));
                 });
@@ -730,6 +750,14 @@
             details.push(`Taxe séjour: ${taxeSejour.toFixed(2)}€`);
             
             // Options
+            // Petit déjeuner
+            const petitdej = parseInt(card.querySelector('.opt-petitdej').value || 0);
+            if (petitdej > 0) {
+                const prixPetitDej = petitdej * 9;
+                prixTotal += prixPetitDej;
+                details.push(`${petitdej} petit déj.: ${prixPetitDej}€`);
+            }
+            
             const animal = card.querySelector('.opt-animal').checked;
             if (animal) {
                 prixTotal += 10;
