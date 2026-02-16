@@ -268,6 +268,33 @@
             color: #0c5460;
             border: 1px solid #bee5eb;
         }
+
+        .confirmation-success {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 600px;
+    margin: 50px auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.confirmation-success h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.confirmation-success p {
+    font-size: 1.2em;
+    line-height: 1.6;
+    margin: 10px 0;
+}
+
+.confirmation-success .check-icon {
+    font-size: 4em;
+    margin-bottom: 20px;
+}
         
         .disabled {
             opacity: 0.6;
@@ -937,51 +964,90 @@
         document.getElementById('reservationForm').reset();
     }
     
-    async function submitReservation(e) {
-        e.preventDefault();
+   async function submitReservation(e) {
+    e.preventDefault();
+    
+    const loading = document.querySelector('.loading');
+    const submitBtn = document.querySelector('.btn-submit');
+    
+    loading.style.display = 'block';
+    submitBtn.disabled = true;
+    
+    const data = {
+        ...window.currentReservation,
+        nom: document.getElementById('nom').value,
+        prenom: document.getElementById('prenom').value,
+        email: document.getElementById('email').value,
+        telephone: document.getElementById('telephone').value,
+        adresse: document.getElementById('adresse').value,
+        ville: document.getElementById('ville').value,
+        code_postal: document.getElementById('code_postal').value,
+        pays: document.getElementById('pays').value,
+        message: document.getElementById('message').value
+    };
+    
+    try {
+        const response = await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
         
-        const loading = document.querySelector('.loading');
-        const submitBtn = document.querySelector('.btn-submit');
+        const result = await response.json();
         
-        loading.style.display = 'block';
-        submitBtn.disabled = true;
-        
-        const data = {
-            ...window.currentReservation,
-            nom: document.getElementById('nom').value,
-            prenom: document.getElementById('prenom').value,
-            email: document.getElementById('email').value,
-            telephone: document.getElementById('telephone').value,
-            adresse: document.getElementById('adresse').value,
-            ville: document.getElementById('ville').value,
-            code_postal: document.getElementById('code_postal').value,
-            pays: document.getElementById('pays').value,
-            message: document.getElementById('message').value
-        };
-        
-        try {
-            const response = await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+        if (result.success) {
+            // Fermer la modal
+            closeModal();
+            
+            // Masquer les onglets et toutes les cartes
+            document.querySelector('.tabs').style.display = 'none';
+            document.querySelectorAll('.logement-card').forEach(card => {
+                card.style.display = 'none';
             });
             
-            const result = await response.json();
+            // Afficher le message de confirmation permanent
+            const confirmationHTML = `
+                <div class="confirmation-success">
+                    <div class="check-icon">✅</div>
+                    <h2>Réservation envoyée avec succès !</h2>
+                    <h2>Booking sent successfully!</h2>
+                    <p><strong>Merci ${data.prenom} ${data.nom} !</strong></p>
+                    <p>Nous avons bien reçu votre demande de réservation.</p>
+                    <p>We have received your booking request.</p>
+                    <p>📧 Un email de confirmation vous a été envoyé à :<br><strong>${data.email}</strong></p>
+                    <p>📧 A confirmation email has been sent to you at:<br><strong>${data.email}</strong></p>
+                    <p style="margin-top: 30px; font-size: 0.9em; opacity: 0.9;">
+                        Nous vous contacterons très rapidement pour finaliser votre réservation.<br>
+                        We will contact you very soon to finalize your booking.
+                    </p>
+                </div>
+            `;
             
-            if (result.success) {
-                showAlert('Réservation envoyée avec succès ! Vous allez recevoir un email de confirmation.', 'success');
-                closeModal();
-            } else {
-                showAlert(result.message || 'Erreur lors de la réservation. Veuillez réessayer.', 'error');
-            }
-        } catch (error) {
-            showAlert('Erreur de connexion. Veuillez réessayer plus tard.', 'error');
-        } finally {
-            loading.style.display = 'none';
-            submitBtn.disabled = false;
+            // Remplacer le contenu du container
+            const container = document.querySelector('.container');
+            const title = container.querySelector('h1');
+            const subtitle = container.querySelector('.subtitle');
+            
+            // Garder seulement le titre et ajouter la confirmation
+            container.innerHTML = '';
+            container.appendChild(title);
+            subtitle.textContent = '';
+            container.appendChild(subtitle);
+            container.insertAdjacentHTML('beforeend', confirmationHTML);
+            
+            // Scroll vers le haut
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+        } else {
+            showAlert(result.message || 'Erreur lors de la réservation. Veuillez réessayer.', 'error');
         }
+    } catch (error) {
+        showAlert('Erreur de connexion. Veuillez réessayer plus tard.', 'error');
+    } finally {
+        loading.style.display = 'none';
+        submitBtn.disabled = false;
     }
-    
+}    
     function showAlert(message, type) {
         const container = document.getElementById('alertContainer');
         const alert = document.createElement('div');
