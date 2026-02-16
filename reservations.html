@@ -687,6 +687,9 @@
 
 
 // === GESTION ONGLET LOGEMENTS ===
+// Afficher le premier logement au chargement
+document.querySelector('.logement-card[data-logement="tour"]').classList.add('active');
+
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
