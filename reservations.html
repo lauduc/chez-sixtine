@@ -950,12 +950,19 @@
             
             const checkResult = await checkResponse.json();
             
-            if (!checkResult.available) {
-                showAlert('❌ Dates non disponibles. Veuillez choisir d\'autres dates.', 'error', false);
-                return;
-            }
-            
-            showAlert('✅ Dates disponibles !', 'success', false);
+           if (!checkResult.available) {
+            showAlert('❌ Dates non disponibles. Veuillez choisir d\'autres dates.', 'error', false);
+            // >>> COPIEZ CE setTimeout ICI <<<
+            setTimeout(() => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }, 100);
+            return;
+        }
+        
+        showAlert('✅ Dates disponibles !', 'success', false);
             
         } catch (error) {
             showAlert('⚠️ Impossible de vérifier la disponibilité. Veuillez réessayer.', 'error', false);
@@ -1174,6 +1181,8 @@ window.scrollTo({
 });
     // EFFACER TOUS LES ANCIENS MESSAGES
 alertContainer.innerHTML = '';
+
+    
     
     </script>
 </body>
