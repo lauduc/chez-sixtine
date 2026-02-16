@@ -679,7 +679,7 @@
         </div>
     </div>
     
- <script>
+<script>
     // Configuration
     const WEBHOOK_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chez-sixtine-reservation';
     const CHECK_DISPO_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chez-sixtine-check-dispo';
@@ -737,28 +737,28 @@
                 const cardToShow = document.querySelector(`.logement-card[data-logement="${logementId}"]`);
                 if (cardToShow) {
                     cardToShow.classList.add('active');
+                    
+                    // Recalculer le prix pour cette carte
+                    calculatePrice(cardToShow, logementId);
                 }
             });
         });
         
-        // Écouteurs pour chaque carte
+        // Initialiser les valeurs par défaut pour chaque carte
         document.querySelectorAll('.logement-card').forEach(card => {
             const logement = card.dataset.logement;
             
             // Initialiser le nombre de personnes à 2
             const nbPersonnesSelect = card.querySelector('.nb-personnes');
             if (nbPersonnesSelect) {
-                nbPersonnesSelect.value = '2';
+                // Sélectionner l'option avec la valeur "2"
+                for (let i = 0; i < nbPersonnesSelect.options.length; i++) {
+                    if (nbPersonnesSelect.options[i].value === '2') {
+                        nbPersonnesSelect.selectedIndex = i;
+                        break;
+                    }
+                }
             }
-            
-            // Calculer prix à chaque changement
-            card.querySelectorAll('.date-arrivee, .date-depart, .nb-personnes, .opt-petitdej, .opt-animal, .opt-repas, .opt-bebe').forEach(el => {
-                el.addEventListener('change', () => calculatePrice(card, logement));
-                el.addEventListener('input', () => calculatePrice(card, logement));
-            });
-            
-            // Initialiser le prix avec la valeur par défaut
-            setTimeout(() => calculatePrice(card, logement), 100);
             
             // Gérer la date d'arrivée pour initialiser la date de départ au lendemain
             const dateArriveeInput = card.querySelector('.date-arrivee');
@@ -766,7 +766,7 @@
             
             if (dateArriveeInput && dateDepartInput) {
                 dateArriveeInput.addEventListener('change', function() {
-                    if (this.value && !dateDepartInput.value) {
+                    if (this.value) {
                         const dateArrivee = new Date(this.value);
                         const dateDepart = new Date(dateArrivee);
                         dateDepart.setDate(dateDepart.getDate() + 1);
@@ -784,6 +784,15 @@
                 });
             }
             
+            // Calculer prix à chaque changement
+            card.querySelectorAll('.date-arrivee, .date-depart, .nb-personnes, .opt-petitdej, .opt-animal, .opt-repas, .opt-bebe').forEach(el => {
+                el.addEventListener('change', () => calculatePrice(card, logement));
+                el.addEventListener('input', () => calculatePrice(card, logement));
+            });
+            
+            // Initialiser le prix (avec un délai pour être sûr que le DOM est prêt)
+            setTimeout(() => calculatePrice(card, logement), 200);
+            
             // Bouton réserver
             const btnReserver = card.querySelector('.btn-reserver');
             if (btnReserver) {
@@ -799,16 +808,19 @@
     });
     
     function calculatePrice(card, logement) {
-        const arrivee = card.querySelector('.date-arrivee').value;
-        const depart = card.querySelector('.date-depart').value;
-        const nbPersonnes = card.querySelector('.nb-personnes').value;
+        // S'assurer que la carte est accessible
+        if (!card) return;
+        
+        const arrivee = card.querySelector('.date-arrivee')?.value;
+        const depart = card.querySelector('.date-depart')?.value;
+        const nbPersonnes = card.querySelector('.nb-personnes')?.value;
         const priceDisplay = card.querySelector('.price-amount');
         const breakdown = card.querySelector('.price-breakdown');
         const btnReserver = card.querySelector('.btn-reserver');
         
         if (!arrivee || !depart || !nbPersonnes) {
-            priceDisplay.textContent = 'Sélectionnez vos dates';
-            breakdown.textContent = '';
+            if (priceDisplay) priceDisplay.textContent = 'Sélectionnez vos dates';
+            if (breakdown) breakdown.textContent = '';
             if (btnReserver) btnReserver.disabled = true;
             return;
         }
@@ -817,8 +829,8 @@
         const dateDepart = new Date(depart);
         
         if (dateDepart <= dateArrivee) {
-            priceDisplay.textContent = 'Dates invalides';
-            breakdown.textContent = '';
+            if (priceDisplay) priceDisplay.textContent = 'Dates invalides';
+            if (breakdown) breakdown.textContent = '';
             if (btnReserver) btnReserver.disabled = true;
             return;
         }
@@ -830,10 +842,10 @@
         let details = [];
         
         // Prix nuitées
-        const grille = PRIX[logement][nbPersonnes];
+        const grille = PRIX[logement]?.[nbPersonnes];
         
         if (!grille) {
-            priceDisplay.textContent = 'Configuration invalide';
+            if (priceDisplay) priceDisplay.textContent = 'Configuration invalide';
             return;
         }
         
@@ -907,8 +919,8 @@
             details.push('Lit bébé: 20€');
         }
         
-        priceDisplay.textContent = `${prixTotal.toFixed(2)}€`;
-        breakdown.textContent = details.join(' • ');
+        if (priceDisplay) priceDisplay.textContent = `${prixTotal.toFixed(2)}€`;
+        if (breakdown) breakdown.textContent = details.join(' • ');
         if (btnReserver) btnReserver.disabled = false;
     }
     
@@ -1001,7 +1013,10 @@
         const activeTab = document.querySelector('.tab.active');
         if (activeTab) {
             const logementId = activeTab.getAttribute('data-logement');
-            document.querySelector(`.logement-card[data-logement="${logementId}"]`).style.display = 'block';
+            const cardToShow = document.querySelector(`.logement-card[data-logement="${logementId}"]`);
+            if (cardToShow) {
+                cardToShow.style.display = 'block';
+            }
         }
         
         // Réinitialiser le formulaire
@@ -1100,26 +1115,34 @@
     }
     
     function showAlert(message, type, autoHide = false) {
-        const container = document.getElementById('alertContainer');
-        
         // Vérifier si le conteneur existe, sinon le créer
-        if (!container) {
-            const newContainer = document.createElement('div');
-            newContainer.id = 'alertContainer';
-            document.querySelector('.container').insertBefore(newContainer, document.querySelector('.container').firstChild);
+        let alertContainer = document.getElementById('alertContainer');
+        if (!alertContainer) {
+            alertContainer = document.createElement('div');
+            alertContainer.id = 'alertContainer';
+            const container = document.querySelector('.container');
+            if (container) {
+                container.insertBefore(alertContainer, container.firstChild);
+            }
         }
         
-        const alertContainer = document.getElementById('alertContainer');
         const alert = document.createElement('div');
         alert.className = `alert alert-${type}`;
-        alert.textContent = message;
         alert.style.display = 'block';
+        alert.style.padding = '15px';
+        alert.style.marginBottom = '10px';
+        alert.style.borderRadius = '8px';
+        
+        // Créer le contenu du message
+        const messageSpan = document.createElement('span');
+        messageSpan.textContent = message;
+        alert.appendChild(messageSpan);
         
         // Ajouter un bouton de fermeture si on veut pouvoir le fermer manuellement
         if (!autoHide) {
             const closeBtn = document.createElement('span');
             closeBtn.innerHTML = '&times;';
-            closeBtn.style.cssText = 'float: right; cursor: pointer; font-weight: bold; margin-left: 10px;';
+            closeBtn.style.cssText = 'float: right; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 20px;';
             closeBtn.onclick = function() {
                 alert.style.display = 'none';
             };
