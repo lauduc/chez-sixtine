@@ -270,6 +270,12 @@
             border: 1px solid #f5c6cb;
         }
         
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
         .disabled {
             opacity: 0.6;
             pointer-events: none;
@@ -604,7 +610,8 @@
     
     <script>
         // Configuration
-        const WEBHOOK_URL = 'VOTRE_URL_N8N_WEBHOOK_ICI'; // À remplacer
+        const WEBHOOK_URL = 'https://n8n.srv1333698.hstgr.cloud/webhook/chez-sixtine-reservation'; // À remplacer
+        const CHECK_DISPO_URL = 'https://n8n.srv1333698.hstgr.cloud/webhook/chez-sixtine-check-dispo'; // À remplacer
         
         // Grilles tarifaires
         const PRIX = {
@@ -781,11 +788,46 @@
             btnReserver.disabled = false;
         }
         
-        function openReservationModal(card, logement) {
+        async function openReservationModal(card, logement) {
             const arrivee = card.querySelector('.date-arrivee').value;
             const depart = card.querySelector('.date-depart').value;
             const nbPersonnes = card.querySelector('.nb-personnes').value;
             const prixTotal = card.querySelector('.price-amount').textContent;
+            
+            if (!arrivee || !depart || !nbPersonnes) {
+                showAlert('Veuillez sélectionner toutes les informations', 'error');
+                return;
+            }
+            
+            // Afficher message de vérification
+            showAlert('⏳ Vérification des disponibilités en cours...', 'info');
+            
+            // Vérifier la disponibilité
+            try {
+                const checkResponse = await fetch(CHECK_DISPO_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        logement: logement,
+                        arrivee: arrivee,
+                        depart: depart
+                    })
+                });
+                
+                const checkResult = await checkResponse.json();
+                
+                if (!checkResult.available) {
+                    showAlert('❌ Dates non disponibles. Veuillez choisir d\'autres dates.', 'error');
+                    return;
+                }
+                
+                // Si disponible, afficher la popup
+                showAlert('✅ Dates disponibles !', 'success');
+                
+            } catch (error) {
+                showAlert('⚠️ Impossible de vérifier la disponibilité. Veuillez réessayer.', 'error');
+                return;
+            }
             
             const logementNames = {
                 tour: 'La Tour d\'Albon',
@@ -809,6 +851,7 @@
                 depart,
                 nbPersonnes,
                 prixTotal,
+                petitdej: parseInt(card.querySelector('.opt-petitdej').value || 0),
                 animal: card.querySelector('.opt-animal').checked,
                 repas: parseInt(card.querySelector('.opt-repas').value || 0),
                 bebe: card.querySelector('.opt-bebe').checked
