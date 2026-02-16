@@ -647,340 +647,355 @@
     </div>
     
     <script>
-        // Configuration
-        const WEBHOOK_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chez-sixtine-reservation';
-        const CHECK_DISPO_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chez-sixtine-check-dispo';
-        
-        // Grilles tarifaires
-        const PRIX = {
-            tour: {
-                2: { semaine: 85, weekend: 89 },
-                4: { semaine: 105, weekend: 109 },
-                5: { couchageSupp: 30 }
-            },
-            drome: {
-                2: { semaine: 75, weekend: 79 },
-                3: { couchageSupp: 30 }
-            },
-            duchesse: {
-                2: { semaine: 65, weekend: 69 },
-                3: { couchageSupp: 30 }
-            },
-            studio: {
-                '1-120': { semaine: 95, weekend: 99 },
-                '2-140': { semaine: 105, weekend: 109 },
-                '3-combo': { semaine: 125, weekend: 129 }
-            }
-        };
-        
-        const TAXE_SEJOUR = 0.70;
-        
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', () => {
-            // Définir date minimale à aujourd'hui
-            const today = new Date().toISOString().split('T')[0];
-            document.querySelectorAll('.date-arrivee').forEach(input => {
-                input.min = today;
-            });
+    // Configuration
+    const WEBHOOK_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chez-sixtine-reservation';
+    const CHECK_DISPO_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chez-sixtine-check-dispo';
+    
+    // Grilles tarifaires
+    const PRIX = {
+        tour: {
+            2: { semaine: 85, weekend: 89 },
+            4: { semaine: 105, weekend: 109 },
+            5: { couchageSupp: 30 }
+        },
+        drome: {
+            2: { semaine: 75, weekend: 79 },
+            3: { couchageSupp: 30 }
+        },
+        duchesse: {
+            2: { semaine: 65, weekend: 69 },
+            3: { couchageSupp: 30 }
+        },
+        studio: {
+            '1-120': { semaine: 95, weekend: 99 },
+            '2-140': { semaine: 105, weekend: 109 },
+            '3-combo': { semaine: 125, weekend: 129 }
+        }
+    };
+    
+    const TAXE_SEJOUR = 0.70;
+    
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', () => {
+        // Définir date minimale à aujourd'hui
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('.date-arrivee').forEach(input => {
+            input.min = today;
+        });
 
-            // Gestion des onglets
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    // Désactiver tous les onglets et cartes
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.logement-card').forEach(card => card.classList.remove('active'));
-
-                    // Activer l'onglet cliqué
-                    tab.classList.add('active');
-                    
-                    // Afficher la carte correspondante
-                    const logement = tab.dataset.logement;
-                    const cardToShow = document.querySelector(`.logement-card[data-logement="${logement}"]`);
-                    if (cardToShow) {
-                        cardToShow.classList.add('active');
-                    }
-                });
-            });
-            
-            // Écouteurs pour chaque carte
-            document.querySelectorAll('.logement-card').forEach(card => {
-                const logement = card.dataset.logement;
+        // === GESTION DES ONGLETS ===
+        // Afficher le premier logement au chargement (déjà fait dans le HTML avec la classe active)
+        
+        // Ajouter les événements sur les onglets
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Retirer la classe active de tous les onglets
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 
-                // Calculer prix à chaque changement
-                card.querySelectorAll('.date-arrivee, .date-depart, .nb-personnes, .opt-petitdej, .opt-animal, .opt-repas, .opt-bebe').forEach(el => {
-                    el.addEventListener('change', () => calculatePrice(card, logement));
-                    el.addEventListener('input', () => calculatePrice(card, logement));
+                // Ajouter la classe active à l'onglet cliqué
+                this.classList.add('active');
+                
+                // Récupérer l'identifiant du logement
+                const logementId = this.getAttribute('data-logement');
+                
+                // Cacher toutes les cartes de logement
+                document.querySelectorAll('.logement-card').forEach(card => {
+                    card.classList.remove('active');
                 });
                 
-                // Bouton réserver
-                card.querySelector('.btn-reserver').addEventListener('click', () => openReservationModal(card, logement));
-            });
-            
-            // Modal
-            document.querySelector('.close-modal').addEventListener('click', closeModal);
-            document.getElementById('reservationForm').addEventListener('submit', submitReservation);
-            
-            // Fermer modal en cliquant sur le fond
-            document.getElementById('reservationModal').addEventListener('click', (e) => {
-                if (e.target.id === 'reservationModal') {
-                    closeModal();
+                // Afficher la carte correspondante
+                const cardToShow = document.querySelector(`.logement-card[data-logement="${logementId}"]`);
+                if (cardToShow) {
+                    cardToShow.classList.add('active');
                 }
             });
         });
         
-        function calculatePrice(card, logement) {
-            const arrivee = card.querySelector('.date-arrivee').value;
-            const depart = card.querySelector('.date-depart').value;
-            const nbPersonnes = card.querySelector('.nb-personnes').value;
-            const priceDisplay = card.querySelector('.price-amount');
-            const breakdown = card.querySelector('.price-breakdown');
+        // Écouteurs pour chaque carte
+        document.querySelectorAll('.logement-card').forEach(card => {
+            const logement = card.dataset.logement;
+            
+            // Calculer prix à chaque changement
+            card.querySelectorAll('.date-arrivee, .date-depart, .nb-personnes, .opt-petitdej, .opt-animal, .opt-repas, .opt-bebe').forEach(el => {
+                el.addEventListener('change', () => calculatePrice(card, logement));
+                el.addEventListener('input', () => calculatePrice(card, logement));
+            });
+            
+            // Bouton réserver
             const btnReserver = card.querySelector('.btn-reserver');
-            
-            if (!arrivee || !depart || !nbPersonnes) {
-                priceDisplay.textContent = 'Sélectionnez vos dates';
-                breakdown.textContent = '';
-                btnReserver.disabled = true;
-                return;
+            if (btnReserver) {
+                btnReserver.addEventListener('click', () => openReservationModal(card, logement));
             }
-            
-            const dateArrivee = new Date(arrivee);
-            const dateDepart = new Date(depart);
-            
-            if (dateDepart <= dateArrivee) {
-                priceDisplay.textContent = 'Dates invalides';
-                breakdown.textContent = '';
-                btnReserver.disabled = true;
-                return;
-            }
-            
-            const nbNuits = Math.ceil((dateDepart - dateArrivee) / (1000 * 60 * 60 * 24));
-            
-            // Calculer prix de base
-            let prixTotal = 0;
-            let details = [];
-            
-            // Prix nuitées
-            let prixNuit = 0;
-            const grille = PRIX[logement][nbPersonnes];
-            
-            if (!grille) {
-                priceDisplay.textContent = 'Configuration invalide';
-                return;
-            }
-            
-            // Déterminer si weekend (vendredi/samedi) ou vacances d'été (juillet-août)
-            let nbWeekend = 0;
-            let nbSemaine = 0;
-            
-            for (let d = new Date(dateArrivee); d < dateDepart; d.setDate(d.getDate() + 1)) {
-                const day = d.getDay();
-                const month = d.getMonth(); // 0-11 (0=janvier, 6=juillet, 7=août)
-                
-                // Weekend = vendredi/samedi OU juillet/août (vacances scolaires)
-                if (day === 5 || day === 6 || month === 6 || month === 7) {
-                    nbWeekend++;
-                } else {
-                    nbSemaine++;
-                }
-            }
-            
-            if (grille.semaine && grille.weekend) {
-                prixTotal += (nbSemaine * grille.semaine) + (nbWeekend * grille.weekend);
-                
-                // Affichage intelligent : ne pas afficher "0×prix"
-                let detailNuits = `${nbNuits} nuit${nbNuits > 1 ? 's' : ''}`;
-                if (nbSemaine > 0 && nbWeekend > 0) {
-                    detailNuits += ` (${nbSemaine}×${grille.semaine}€ + ${nbWeekend}×${grille.weekend}€)`;
-                } else if (nbSemaine > 0) {
-                    detailNuits += ` (${nbSemaine}×${grille.semaine}€)`;
-                } else {
-                    detailNuits += ` (${nbWeekend}×${grille.weekend}€)`;
-                }
-                
-                details.push(detailNuits);
-            } else if (grille.couchageSupp) {
-                const basePrice = logement === 'tour' ? (nbWeekend > nbSemaine ? 109 : 105) : 
-                                  logement === 'drome' ? (nbWeekend > nbSemaine ? 79 : 75) :
-                                  (nbWeekend > nbSemaine ? 69 : 65);
-                prixTotal += (nbNuits * basePrice) + (nbNuits * grille.couchageSupp);
-                details.push(`${nbNuits} nuit${nbNuits > 1 ? 's' : ''} + couchage suppl.`);
-            }
-            
-            // Taxe de séjour
-            const nbPersonnesNum = nbPersonnes.includes('-') ? parseInt(nbPersonnes.split('-')[0]) : parseInt(nbPersonnes);
-            const taxeSejour = TAXE_SEJOUR * nbPersonnesNum * nbNuits;
-            prixTotal += taxeSejour;
-            details.push(`Taxe séjour: ${taxeSejour.toFixed(2)}€`);
-            
-            // Options
-            // Petit déjeuner
-            const petitdej = parseInt(card.querySelector('.opt-petitdej').value || 0);
-            if (petitdej > 0) {
-                const prixPetitDej = petitdej * 9;
-                prixTotal += prixPetitDej;
-                details.push(`${petitdej} petit déj.: ${prixPetitDej}€`);
-            }
-            
-            const animal = card.querySelector('.opt-animal').checked;
-            if (animal) {
-                prixTotal += 10;
-                details.push('Forfait animal: 10€');
-            }
-            
-            const repas = parseInt(card.querySelector('.opt-repas').value || 0);
-            if (repas > 0) {
-                const prixRepas = repas * 25;
-                prixTotal += prixRepas;
-                details.push(`${repas} repas d'hôtes: ${prixRepas}€`);
-            }
-            
-            const bebe = card.querySelector('.opt-bebe').checked;
-            if (bebe) {
-                prixTotal += 20;
-                details.push('Lit bébé / Baby crib: 20€');
-            }
-            
-            priceDisplay.textContent = `${prixTotal.toFixed(2)}€`;
-            breakdown.textContent = details.join(' • ');
-            btnReserver.disabled = false;
+        });
+        
+        // Modal
+        const closeModalBtn = document.querySelector('.close-modal');
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', closeModal);
         }
         
-        async function openReservationModal(card, logement) {
-            const arrivee = card.querySelector('.date-arrivee').value;
-            const depart = card.querySelector('.date-depart').value;
-            const nbPersonnes = card.querySelector('.nb-personnes').value;
-            const prixTotal = card.querySelector('.price-amount').textContent;
-            
-            if (!arrivee || !depart || !nbPersonnes) {
-                showAlert('Veuillez sélectionner toutes les informations', 'error');
-                return;
-            }
-            
-            // Afficher message de vérification
-            showAlert('⏳ Vérification des disponibilités en cours...', 'info');
-            
-            // Vérifier la disponibilité
-            try {
-                const checkResponse = await fetch(CHECK_DISPO_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        logement: logement,
-                        arrivee: arrivee,
-                        depart: depart
-                    })
-                });
-                
-                const checkResult = await checkResponse.json();
-                
-                if (!checkResult.available) {
-                    showAlert('❌ Dates non disponibles. Veuillez choisir d\'autres dates.', 'error');
-                    return;
-                }
-                
-                // Si disponible, afficher la popup
-                showAlert('✅ Dates disponibles !', 'success');
-                
-            } catch (error) {
-                showAlert('⚠️ Impossible de vérifier la disponibilité. Veuillez réessayer.', 'error');
-                return;
-            }
-            
-            const logementNames = {
-                tour: 'La Tour d\'Albon',
-                drome: 'La Drôme',
-                duchesse: 'La Duchesse',
-                studio: 'Le Studio'
-            };
-            
-            document.getElementById('reservationSummary').innerHTML = `
-                <strong>Logement :</strong> ${logementNames[logement]}<br>
-                <strong>Du :</strong> ${new Date(arrivee).toLocaleDateString('fr-FR')} 
-                <strong>au :</strong> ${new Date(depart).toLocaleDateString('fr-FR')}<br>
-                <strong>Personnes :</strong> ${nbPersonnes}<br>
-                <strong>Prix total :</strong> ${prixTotal}
-            `;
-            
-            // Stocker les données
-            window.currentReservation = {
-                logement,
-                arrivee,
-                depart,
-                nbPersonnes,
-                prixTotal,
-                petitdej: parseInt(card.querySelector('.opt-petitdej').value || 0),
-                animal: card.querySelector('.opt-animal').checked,
-                repas: parseInt(card.querySelector('.opt-repas').value || 0),
-                bebe: card.querySelector('.opt-bebe').checked
-            };
-            
-            document.getElementById('reservationModal').style.display = 'block';
+        const reservationForm = document.getElementById('reservationForm');
+        if (reservationForm) {
+            reservationForm.addEventListener('submit', submitReservation);
         }
         
-        function closeModal() {
-            document.getElementById('reservationModal').style.display = 'none';
-            document.getElementById('reservationForm').reset();
-        }
-        
-        async function submitReservation(e) {
-            e.preventDefault();
-            
-            const loading = document.querySelector('.loading');
-            const submitBtn = document.querySelector('.btn-submit');
-            
-            loading.style.display = 'block';
-            submitBtn.disabled = true;
-            
-            const data = {
-                ...window.currentReservation,
-                nom: document.getElementById('nom').value,
-                prenom: document.getElementById('prenom').value,
-                email: document.getElementById('email').value,
-                telephone: document.getElementById('telephone').value,
-                adresse: document.getElementById('adresse').value,
-                ville: document.getElementById('ville').value,
-                code_postal: document.getElementById('code_postal').value,
-                pays: document.getElementById('pays').value,
-                message: document.getElementById('message').value
-            };
-            
-            try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showAlert('Réservation envoyée avec succès ! Vous allez recevoir un email de confirmation.', 'success');
+        // Fermer modal en cliquant sur le fond
+        const modal = document.getElementById('reservationModal');
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target.id === 'reservationModal') {
                     closeModal();
-                } else {
-                    showAlert(result.message || 'Erreur lors de la réservation. Veuillez réessayer.', 'error');
                 }
-            } catch (error) {
-                showAlert('Erreur de connexion. Veuillez réessayer plus tard.', 'error');
-            } finally {
-                loading.style.display = 'none';
-                submitBtn.disabled = false;
+            });
+        }
+    });
+    
+    function calculatePrice(card, logement) {
+        const arrivee = card.querySelector('.date-arrivee').value;
+        const depart = card.querySelector('.date-depart').value;
+        const nbPersonnes = card.querySelector('.nb-personnes').value;
+        const priceDisplay = card.querySelector('.price-amount');
+        const breakdown = card.querySelector('.price-breakdown');
+        const btnReserver = card.querySelector('.btn-reserver');
+        
+        if (!arrivee || !depart || !nbPersonnes) {
+            priceDisplay.textContent = 'Sélectionnez vos dates';
+            breakdown.textContent = '';
+            if (btnReserver) btnReserver.disabled = true;
+            return;
+        }
+        
+        const dateArrivee = new Date(arrivee);
+        const dateDepart = new Date(depart);
+        
+        if (dateDepart <= dateArrivee) {
+            priceDisplay.textContent = 'Dates invalides';
+            breakdown.textContent = '';
+            if (btnReserver) btnReserver.disabled = true;
+            return;
+        }
+        
+        const nbNuits = Math.ceil((dateDepart - dateArrivee) / (1000 * 60 * 60 * 24));
+        
+        // Calculer prix de base
+        let prixTotal = 0;
+        let details = [];
+        
+        // Prix nuitées
+        const grille = PRIX[logement][nbPersonnes];
+        
+        if (!grille) {
+            priceDisplay.textContent = 'Configuration invalide';
+            return;
+        }
+        
+        // Déterminer si weekend (vendredi/samedi) ou vacances d'été (juillet-août)
+        let nbWeekend = 0;
+        let nbSemaine = 0;
+        
+        for (let d = new Date(dateArrivee); d < dateDepart; d.setDate(d.getDate() + 1)) {
+            const day = d.getDay();
+            const month = d.getMonth();
+            
+            // Weekend = vendredi/samedi OU juillet/août
+            if (day === 5 || day === 6 || month === 6 || month === 7) {
+                nbWeekend++;
+            } else {
+                nbSemaine++;
             }
         }
         
-        function showAlert(message, type) {
-            const container = document.getElementById('alertContainer');
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.textContent = message;
-            alert.style.display = 'block';
+        if (grille.semaine && grille.weekend) {
+            prixTotal += (nbSemaine * grille.semaine) + (nbWeekend * grille.weekend);
             
-            container.innerHTML = '';
-            container.appendChild(alert);
+            let detailNuits = `${nbNuits} nuit${nbNuits > 1 ? 's' : ''}`;
+            if (nbSemaine > 0 && nbWeekend > 0) {
+                detailNuits += ` (${nbSemaine}×${grille.semaine}€ + ${nbWeekend}×${grille.weekend}€)`;
+            } else if (nbSemaine > 0) {
+                detailNuits += ` (${nbSemaine}×${grille.semaine}€)`;
+            } else {
+                detailNuits += ` (${nbWeekend}×${grille.weekend}€)`;
+            }
             
-            setTimeout(() => {
-                alert.style.display = 'none';
-            }, 5000);
+            details.push(detailNuits);
+        } else if (grille.couchageSupp) {
+            const basePrice = logement === 'tour' ? (nbWeekend > nbSemaine ? 109 : 105) : 
+                              logement === 'drome' ? (nbWeekend > nbSemaine ? 79 : 75) :
+                              (nbWeekend > nbSemaine ? 69 : 65);
+            prixTotal += (nbNuits * basePrice) + (nbNuits * grille.couchageSupp);
+            details.push(`${nbNuits} nuit${nbNuits > 1 ? 's' : ''} + couchage suppl.`);
         }
-    </script>
+        
+        // Taxe de séjour
+        const nbPersonnesNum = nbPersonnes.includes('-') ? parseInt(nbPersonnes.split('-')[0]) : parseInt(nbPersonnes);
+        const taxeSejour = TAXE_SEJOUR * nbPersonnesNum * nbNuits;
+        prixTotal += taxeSejour;
+        details.push(`Taxe séjour: ${taxeSejour.toFixed(2)}€`);
+        
+        // Options
+        const petitdej = parseInt(card.querySelector('.opt-petitdej')?.value || 0);
+        if (petitdej > 0) {
+            const prixPetitDej = petitdej * 9;
+            prixTotal += prixPetitDej;
+            details.push(`${petitdej} petit déj.: ${prixPetitDej}€`);
+        }
+        
+        const animal = card.querySelector('.opt-animal')?.checked || false;
+        if (animal) {
+            prixTotal += 10;
+            details.push('Forfait animal: 10€');
+        }
+        
+        const repas = parseInt(card.querySelector('.opt-repas')?.value || 0);
+        if (repas > 0) {
+            const prixRepas = repas * 25;
+            prixTotal += prixRepas;
+            details.push(`${repas} repas d'hôtes: ${prixRepas}€`);
+        }
+        
+        const bebe = card.querySelector('.opt-bebe')?.checked || false;
+        if (bebe) {
+            prixTotal += 20;
+            details.push('Lit bébé: 20€');
+        }
+        
+        priceDisplay.textContent = `${prixTotal.toFixed(2)}€`;
+        breakdown.textContent = details.join(' • ');
+        if (btnReserver) btnReserver.disabled = false;
+    }
+    
+    async function openReservationModal(card, logement) {
+        const arrivee = card.querySelector('.date-arrivee').value;
+        const depart = card.querySelector('.date-depart').value;
+        const nbPersonnes = card.querySelector('.nb-personnes').value;
+        const prixTotal = card.querySelector('.price-amount').textContent;
+        
+        if (!arrivee || !depart || !nbPersonnes) {
+            showAlert('Veuillez sélectionner toutes les informations', 'error');
+            return;
+        }
+        
+        showAlert('⏳ Vérification des disponibilités en cours...', 'info');
+        
+        try {
+            const checkResponse = await fetch(CHECK_DISPO_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    logement: logement,
+                    arrivee: arrivee,
+                    depart: depart
+                })
+            });
+            
+            const checkResult = await checkResponse.json();
+            
+            if (!checkResult.available) {
+                showAlert('❌ Dates non disponibles. Veuillez choisir d\'autres dates.', 'error');
+                return;
+            }
+            
+            showAlert('✅ Dates disponibles !', 'success');
+            
+        } catch (error) {
+            showAlert('⚠️ Impossible de vérifier la disponibilité. Veuillez réessayer.', 'error');
+            return;
+        }
+        
+        const logementNames = {
+            tour: 'La Tour d\'Albon',
+            drome: 'La Drôme',
+            duchesse: 'La Duchesse',
+            studio: 'Le Studio'
+        };
+        
+        document.getElementById('reservationSummary').innerHTML = `
+            <strong>Logement :</strong> ${logementNames[logement]}<br>
+            <strong>Du :</strong> ${new Date(arrivee).toLocaleDateString('fr-FR')} 
+            <strong>au :</strong> ${new Date(depart).toLocaleDateString('fr-FR')}<br>
+            <strong>Personnes :</strong> ${nbPersonnes}<br>
+            <strong>Prix total :</strong> ${prixTotal}
+        `;
+        
+        window.currentReservation = {
+            logement,
+            arrivee,
+            depart,
+            nbPersonnes,
+            prixTotal,
+            petitdej: parseInt(card.querySelector('.opt-petitdej')?.value || 0),
+            animal: card.querySelector('.opt-animal')?.checked || false,
+            repas: parseInt(card.querySelector('.opt-repas')?.value || 0),
+            bebe: card.querySelector('.opt-bebe')?.checked || false
+        };
+        
+        document.getElementById('reservationModal').style.display = 'block';
+    }
+    
+    function closeModal() {
+        document.getElementById('reservationModal').style.display = 'none';
+        document.getElementById('reservationForm').reset();
+    }
+    
+    async function submitReservation(e) {
+        e.preventDefault();
+        
+        const loading = document.querySelector('.loading');
+        const submitBtn = document.querySelector('.btn-submit');
+        
+        loading.style.display = 'block';
+        submitBtn.disabled = true;
+        
+        const data = {
+            ...window.currentReservation,
+            nom: document.getElementById('nom').value,
+            prenom: document.getElementById('prenom').value,
+            email: document.getElementById('email').value,
+            telephone: document.getElementById('telephone').value,
+            adresse: document.getElementById('adresse').value,
+            ville: document.getElementById('ville').value,
+            code_postal: document.getElementById('code_postal').value,
+            pays: document.getElementById('pays').value,
+            message: document.getElementById('message').value
+        };
+        
+        try {
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showAlert('Réservation envoyée avec succès ! Vous allez recevoir un email de confirmation.', 'success');
+                closeModal();
+            } else {
+                showAlert(result.message || 'Erreur lors de la réservation. Veuillez réessayer.', 'error');
+            }
+        } catch (error) {
+            showAlert('Erreur de connexion. Veuillez réessayer plus tard.', 'error');
+        } finally {
+            loading.style.display = 'none';
+            submitBtn.disabled = false;
+        }
+    }
+    
+    function showAlert(message, type) {
+        const container = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        alert.style.display = 'block';
+        
+        container.innerHTML = '';
+        container.appendChild(alert);
+        
+        setTimeout(() => {
+            alert.style.display = 'none';
+        }, 5000);
+    }
+</script>
 </body>
 </html>
