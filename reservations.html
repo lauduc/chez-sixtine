@@ -656,9 +656,11 @@
             document.querySelector('.close-modal').addEventListener('click', closeModal);
             document.getElementById('reservationForm').addEventListener('submit', submitReservation);
             
-            // Fermer modal en cliquant à l'extérieur
-            window.addEventListener('click', (e) => {
-                if (e.target.id === 'reservationModal') closeModal();
+            // Fermer modal en cliquant sur le fond (pas au survol)
+            document.getElementById('reservationModal').addEventListener('click', (e) => {
+                if (e.target.id === 'reservationModal') {
+                    closeModal();
+                }
             });
         });
         
