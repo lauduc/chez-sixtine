@@ -911,11 +911,23 @@
         }
         
         function showAlert(message, type) {
+            // Scroll vers le haut pour voir le message
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
             const container = document.getElementById('alertContainer');
             const alert = document.createElement('div');
             alert.className = `alert alert-${type}`;
             alert.textContent = message;
             alert.style.display = 'block';
+            alert.style.position = 'fixed';
+            alert.style.top = '20px';
+            alert.style.left = '50%';
+            alert.style.transform = 'translateX(-50%)';
+            alert.style.zIndex = '9999';
+            alert.style.minWidth = '300px';
+            alert.style.maxWidth = '600px';
+            alert.style.fontSize = '16px';
+            alert.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
             
             container.innerHTML = '';
             container.appendChild(alert);
