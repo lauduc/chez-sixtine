@@ -931,11 +931,11 @@
         const prixTotal = card.querySelector('.price-amount').textContent;
         
         if (!arrivee || !depart || !nbPersonnes) {
-            showAlert('Veuillez sélectionner toutes les informations', 'error', false);
+            await showAlert('Veuillez sélectionner toutes les informations', 'error', false);
             return;
         }
         
-        showAlert('⏳ Vérification des disponibilités en cours...', 'info', false);
+        await showAlert('⏳ Vérification des disponibilités en cours...', 'info', false);
         
         try {
             const checkResponse = await fetch(CHECK_DISPO_URL, {
@@ -950,22 +950,15 @@
             
             const checkResult = await checkResponse.json();
             
-           if (!checkResult.available) {
-            showAlert('❌ Dates non disponibles. Veuillez choisir d\'autres dates.', 'error', false);
-            // >>> COPIEZ CE setTimeout ICI <<<
-            setTimeout(() => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            }, 100);
-            return;
-        }
-        
-        showAlert('✅ Dates disponibles !', 'success', false);
+            if (!checkResult.available) {
+                await showAlert('❌ Dates non disponibles. Veuillez choisir d\'autres dates.', 'error', false);
+                return;
+            }
+            
+            await showAlert('✅ Dates disponibles !', 'success', false);
             
         } catch (error) {
-            showAlert('⚠️ Impossible de vérifier la disponibilité. Veuillez réessayer.', 'error', false);
+            await showAlert('⚠️ Impossible de vérifier la disponibilité. Veuillez réessayer.', 'error', false);
             return;
         }
         
@@ -1108,82 +1101,77 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 
                 // Afficher un message de succès permanent
-                showAlert('✅ Réservation confirmée ! Un email vous a été envoyé.', 'success', false);
+                await showAlert('✅ Réservation confirmée ! Un email vous a été envoyé.', 'success', false);
                 
             } else {
-                showAlert(result.message || 'Erreur lors de la réservation. Veuillez réessayer.', 'error', false);
+                await showAlert(result.message || 'Erreur lors de la réservation. Veuillez réessayer.', 'error', false);
             }
         } catch (error) {
-            showAlert('Erreur de connexion. Veuillez réessayer plus tard.', 'error', false);
+            await showAlert('Erreur de connexion. Veuillez réessayer plus tard.', 'error', false);
         } finally {
             loading.style.display = 'none';
             submitBtn.disabled = false;
         }
     }
     
-function showAlert(message, type, autoHide = false) {
-    // Vérifier si le conteneur existe, sinon le créer
-    let alertContainer = document.getElementById('alertContainer');
-    if (!alertContainer) {
-        alertContainer = document.createElement('div');
-        alertContainer.id = 'alertContainer';
-        const container = document.querySelector('.container');
-        if (container) {
-            container.insertBefore(alertContainer, container.firstChild);
-        }
+    function showAlert(message, type, autoHide = false) {
+        return new Promise((resolve) => {
+            // Vérifier si le conteneur existe, sinon le créer
+            let alertContainer = document.getElementById('alertContainer');
+            if (!alertContainer) {
+                alertContainer = document.createElement('div');
+                alertContainer.id = 'alertContainer';
+                const container = document.querySelector('.container');
+                if (container) {
+                    container.insertBefore(alertContainer, container.firstChild);
+                }
+            }
+            
+            // EFFACER TOUS LES ANCIENS MESSAGES
+            alertContainer.innerHTML = '';
+            
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            alert.style.padding = '15px';
+            alert.style.marginBottom = '10px';
+            alert.style.borderRadius = '8px';
+            
+            // Créer le contenu du message
+            const messageSpan = document.createElement('span');
+            messageSpan.textContent = message;
+            alert.appendChild(messageSpan);
+            
+            // Ajouter un bouton de fermeture si on veut pouvoir le fermer manuellement
+            if (!autoHide) {
+                const closeBtn = document.createElement('span');
+                closeBtn.innerHTML = '&times;';
+                closeBtn.style.cssText = 'float: right; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 20px;';
+                closeBtn.onclick = function() {
+                    alert.style.display = 'none';
+                };
+                alert.appendChild(closeBtn);
+            }
+            
+            alertContainer.appendChild(alert);
+            
+            // SCROLL VERS LE HAUT DE LA PAGE avec un petit délai pour que le message soit affiché
+            setTimeout(() => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                resolve(); // Résoudre la Promise après le scroll
+            }, 100);
+            
+            // Auto-hide uniquement si demandé
+            if (autoHide) {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 5000);
+            }
+        });
     }
-    
-    // EFFACER TOUS LES ANCIENS MESSAGES
-    alertContainer.innerHTML = '';
-    
-    const alert = document.createElement('div');
-    alert.className = `alert alert-${type}`;
-    alert.style.display = 'block';
-    alert.style.padding = '15px';
-    alert.style.marginBottom = '10px';
-    alert.style.borderRadius = '8px';
-    
-    // Créer le contenu du message
-    const messageSpan = document.createElement('span');
-    messageSpan.textContent = message;
-    alert.appendChild(messageSpan);
-    
-    // Ajouter un bouton de fermeture si on veut pouvoir le fermer manuellement
-    if (!autoHide) {
-        const closeBtn = document.createElement('span');
-        closeBtn.innerHTML = '&times;';
-        closeBtn.style.cssText = 'float: right; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 20px;';
-        closeBtn.onclick = function() {
-            alert.style.display = 'none';
-        };
-        alert.appendChild(closeBtn);
-    }
-    
-    alertContainer.appendChild(alert);
-    
-    // SCROLL VERS LE HAUT DE LA PAGE
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-    
-    // Auto-hide uniquement si demandé
-    if (autoHide) {
-        setTimeout(() => {
-            alert.style.display = 'none';
-        }, 5000);
-    }
-}
-    
-window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-});
-    // EFFACER TOUS LES ANCIENS MESSAGES
-alertContainer.innerHTML = '';
-
-    
-    
     </script>
 </body>
 </html>
