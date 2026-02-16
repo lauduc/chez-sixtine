@@ -345,7 +345,18 @@
         .logement-card.active {
             display: block;
         }
-        
+
+        /* Styles pour les conteneurs d'alertes */
+        #bottomAlertContainer {
+            margin-top: 30px;
+            margin-bottom: 20px;
+            position: sticky;
+            bottom: 0;
+            background: transparent;
+            z-index: 999;
+        }
+
+        /* Sur mobile, rendre le message du bas encore plus visible */
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.8em;
@@ -358,6 +369,32 @@
             
             .tab {
                 text-align: center;
+            }
+
+            #bottomAlertContainer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 10px;
+                margin: 0;
+                background: rgba(255,255,255,0.95);
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+                animation: slideUp 0.3s ease-out;
+            }
+            
+            @keyframes slideUp {
+                from {
+                    transform: translateY(100%);
+                }
+                to {
+                    transform: translateY(0);
+                }
+            }
+            
+            #bottomAlertContainer .alert {
+                margin-bottom: 0;
+                border-radius: 10px;
             }
         }
     </style>
@@ -677,6 +714,9 @@
                 </form>
             </div>
         </div>
+        
+        <!-- Conteneur pour les alertes du bas -->
+        <div id="bottomAlertContainer"></div>
     </div>
     
 <script>
@@ -1072,10 +1112,15 @@
                 container.insertAdjacentHTML('afterbegin', title);
                 container.insertAdjacentHTML('beforeend', subtitle);
                 
-                // Ajouter le conteneur d'alertes (pour garder les messages)
-                const alertContainer = document.createElement('div');
-                alertContainer.id = 'alertContainer';
-                container.appendChild(alertContainer);
+                // Ajouter le conteneur d'alertes du haut
+                const topAlertContainer = document.createElement('div');
+                topAlertContainer.id = 'alertContainer';
+                container.appendChild(topAlertContainer);
+                
+                // Ajouter le conteneur d'alertes du bas
+                const bottomAlertContainer = document.createElement('div');
+                bottomAlertContainer.id = 'bottomAlertContainer';
+                container.appendChild(bottomAlertContainer);
                 
                 // Afficher le message de confirmation
                 const confirmationHTML = `
@@ -1097,11 +1142,11 @@
                 
                 container.insertAdjacentHTML('beforeend', confirmationHTML);
                 
-                // SCROLL AMÉLIORÉ APRÈS RECONSTRUCTION
+                // Scroll vers le haut après reconstruction
                 setTimeout(() => {
-                    const newAlertContainer = document.getElementById('alertContainer');
-                    if (newAlertContainer) {
-                        newAlertContainer.scrollIntoView({ 
+                    const newTopAlertContainer = document.getElementById('alertContainer');
+                    if (newTopAlertContainer) {
+                        newTopAlertContainer.scrollIntoView({ 
                             behavior: 'smooth', 
                             block: 'start' 
                         });
@@ -1110,7 +1155,7 @@
                     }
                 }, 100);
                 
-                // Afficher un message de succès permanent
+                // Afficher un message de succès permanent (en haut ET en bas)
                 await showAlert('✅ Réservation confirmée ! Un email vous a été envoyé.', 'success', false);
                 
             } else {
@@ -1126,57 +1171,82 @@
     
     function showAlert(message, type, autoHide = false) {
         return new Promise((resolve) => {
-            // Vérifier si le conteneur existe, sinon le créer
-            let alertContainer = document.getElementById('alertContainer');
-            if (!alertContainer) {
-                alertContainer = document.createElement('div');
-                alertContainer.id = 'alertContainer';
+            // Vérifier si le conteneur du haut existe, sinon le créer
+            let topAlertContainer = document.getElementById('alertContainer');
+            if (!topAlertContainer) {
+                topAlertContainer = document.createElement('div');
+                topAlertContainer.id = 'alertContainer';
                 const container = document.querySelector('.container');
                 if (container) {
-                    container.insertBefore(alertContainer, container.firstChild);
+                    container.insertBefore(topAlertContainer, container.firstChild);
                 }
             }
             
-            // EFFACER TOUS LES ANCIENS MESSAGES
-            alertContainer.innerHTML = '';
-            
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.style.display = 'block';
-            alert.style.padding = '15px';
-            alert.style.marginBottom = '10px';
-            alert.style.borderRadius = '8px';
-            alert.style.position = 'relative';
-            alert.style.zIndex = '1000';
-            alert.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
-            
-            // Créer le contenu du message
-            const messageSpan = document.createElement('span');
-            messageSpan.textContent = message;
-            alert.appendChild(messageSpan);
-            
-            // Ajouter un bouton de fermeture si on veut pouvoir le fermer manuellement
-            if (!autoHide) {
-                const closeBtn = document.createElement('span');
-                closeBtn.innerHTML = '&times;';
-                closeBtn.style.cssText = 'float: right; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 20px; line-height: 20px;';
-                closeBtn.onclick = function() {
-                    alert.style.display = 'none';
-                };
-                alert.appendChild(closeBtn);
+            // Vérifier si le conteneur du bas existe, sinon le créer
+            let bottomAlertContainer = document.getElementById('bottomAlertContainer');
+            if (!bottomAlertContainer) {
+                bottomAlertContainer = document.createElement('div');
+                bottomAlertContainer.id = 'bottomAlertContainer';
+                bottomAlertContainer.style.marginTop = '20px';
+                const container = document.querySelector('.container');
+                if (container) {
+                    container.appendChild(bottomAlertContainer);
+                }
             }
             
-            alertContainer.appendChild(alert);
+            // EFFACER TOUS LES ANCIENS MESSAGES (haut et bas)
+            topAlertContainer.innerHTML = '';
+            bottomAlertContainer.innerHTML = '';
             
-            // SCROLL VERS LE HAUT DE LA PAGE de façon plus agressive
+            // Fonction pour créer une alerte
+            const createAlertElement = () => {
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type}`;
+                alert.style.display = 'block';
+                alert.style.padding = '15px';
+                alert.style.marginBottom = '10px';
+                alert.style.borderRadius = '8px';
+                alert.style.position = 'relative';
+                alert.style.zIndex = '1000';
+                alert.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
+                alert.style.fontSize = window.innerWidth < 768 ? '14px' : '16px';
+                alert.style.fontWeight = 'bold';
+                
+                // Créer le contenu du message
+                const messageSpan = document.createElement('span');
+                messageSpan.textContent = message;
+                alert.appendChild(messageSpan);
+                
+                // Ajouter un bouton de fermeture si on veut pouvoir le fermer manuellement
+                if (!autoHide) {
+                    const closeBtn = document.createElement('span');
+                    closeBtn.innerHTML = '&times;';
+                    closeBtn.style.cssText = 'float: right; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 20px; line-height: 20px;';
+                    closeBtn.onclick = function() {
+                        alert.style.display = 'none';
+                    };
+                    alert.appendChild(closeBtn);
+                }
+                
+                return alert;
+            };
+            
+            // Créer et ajouter l'alerte en haut
+            const topAlert = createAlertElement();
+            topAlertContainer.appendChild(topAlert);
+            
+            // Créer et ajouter l'alerte en bas
+            const bottomAlert = createAlertElement();
+            bottomAlertContainer.appendChild(bottomAlert);
+            
+            // SCROLL VERS LE HAUT (pour voir le message du haut)
             setTimeout(() => {
-                // Méthode 1 : scroll vers l'élément alertContainer
-                alertContainer.scrollIntoView({ 
+                topAlertContainer.scrollIntoView({ 
                     behavior: 'smooth', 
                     block: 'start' 
                 });
                 
-                // Méthode 2 : scroll vers le haut de la page (en backup)
+                // Backup scroll
                 setTimeout(() => {
                     window.scrollTo({
                         top: 0,
@@ -1187,10 +1257,11 @@
                 resolve();
             }, 50);
             
-            // Auto-hide uniquement si demandé
+            // Auto-hide uniquement si demandé (cache les deux messages)
             if (autoHide) {
                 setTimeout(() => {
-                    alert.style.display = 'none';
+                    topAlert.style.display = 'none';
+                    bottomAlert.style.display = 'none';
                 }, 5000);
             }
         });
