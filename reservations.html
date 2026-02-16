@@ -679,7 +679,7 @@
         </div>
     </div>
     
-    <script>
+ <script>
     // Configuration
     const WEBHOOK_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chez-sixtine-reservation';
     const CHECK_DISPO_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chez-sixtine-check-dispo';
@@ -745,11 +745,44 @@
         document.querySelectorAll('.logement-card').forEach(card => {
             const logement = card.dataset.logement;
             
+            // Initialiser le nombre de personnes à 2
+            const nbPersonnesSelect = card.querySelector('.nb-personnes');
+            if (nbPersonnesSelect) {
+                nbPersonnesSelect.value = '2';
+            }
+            
             // Calculer prix à chaque changement
             card.querySelectorAll('.date-arrivee, .date-depart, .nb-personnes, .opt-petitdej, .opt-animal, .opt-repas, .opt-bebe').forEach(el => {
                 el.addEventListener('change', () => calculatePrice(card, logement));
                 el.addEventListener('input', () => calculatePrice(card, logement));
             });
+            
+            // Initialiser le prix avec la valeur par défaut
+            setTimeout(() => calculatePrice(card, logement), 100);
+            
+            // Gérer la date d'arrivée pour initialiser la date de départ au lendemain
+            const dateArriveeInput = card.querySelector('.date-arrivee');
+            const dateDepartInput = card.querySelector('.date-depart');
+            
+            if (dateArriveeInput && dateDepartInput) {
+                dateArriveeInput.addEventListener('change', function() {
+                    if (this.value && !dateDepartInput.value) {
+                        const dateArrivee = new Date(this.value);
+                        const dateDepart = new Date(dateArrivee);
+                        dateDepart.setDate(dateDepart.getDate() + 1);
+                        
+                        // Formater la date au format YYYY-MM-DD
+                        const year = dateDepart.getFullYear();
+                        const month = String(dateDepart.getMonth() + 1).padStart(2, '0');
+                        const day = String(dateDepart.getDate()).padStart(2, '0');
+                        
+                        dateDepartInput.value = `${year}-${month}-${day}`;
+                        
+                        // Recalculer le prix
+                        calculatePrice(card, logement);
+                    }
+                });
+            }
             
             // Bouton réserver
             const btnReserver = card.querySelector('.btn-reserver');
@@ -886,11 +919,11 @@
         const prixTotal = card.querySelector('.price-amount').textContent;
         
         if (!arrivee || !depart || !nbPersonnes) {
-            showAlert('Veuillez sélectionner toutes les informations', 'error');
+            showAlert('Veuillez sélectionner toutes les informations', 'error', false);
             return;
         }
         
-        showAlert('⏳ Vérification des disponibilités en cours...', 'info');
+        showAlert('⏳ Vérification des disponibilités en cours...', 'info', false);
         
         try {
             const checkResponse = await fetch(CHECK_DISPO_URL, {
@@ -906,14 +939,14 @@
             const checkResult = await checkResponse.json();
             
             if (!checkResult.available) {
-                showAlert('❌ Dates non disponibles. Veuillez choisir d\'autres dates.', 'error');
+                showAlert('❌ Dates non disponibles. Veuillez choisir d\'autres dates.', 'error', false);
                 return;
             }
             
-            showAlert('✅ Dates disponibles !', 'success');
+            showAlert('✅ Dates disponibles !', 'success', false);
             
         } catch (error) {
-            showAlert('⚠️ Impossible de vérifier la disponibilité. Veuillez réessayer.', 'error');
+            showAlert('⚠️ Impossible de vérifier la disponibilité. Veuillez réessayer.', 'error', false);
             return;
         }
         
@@ -1024,6 +1057,11 @@
                 container.insertAdjacentHTML('afterbegin', title);
                 container.insertAdjacentHTML('beforeend', subtitle);
                 
+                // Ajouter le conteneur d'alertes (pour garder les messages)
+                const alertContainer = document.createElement('div');
+                alertContainer.id = 'alertContainer';
+                container.appendChild(alertContainer);
+                
                 // Afficher le message de confirmation
                 const confirmationHTML = `
                     <div class="confirmation-success">
@@ -1047,36 +1085,55 @@
                 // Scroll vers le haut
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 
-                // Effacer les alertes
-                const alertContainer = document.getElementById('alertContainer');
-                if (alertContainer) {
-                    alertContainer.innerHTML = '';
-                }
+                // Afficher un message de succès permanent
+                showAlert('✅ Réservation confirmée ! Un email vous a été envoyé.', 'success', false);
                 
             } else {
-                showAlert(result.message || 'Erreur lors de la réservation. Veuillez réessayer.', 'error');
+                showAlert(result.message || 'Erreur lors de la réservation. Veuillez réessayer.', 'error', false);
             }
         } catch (error) {
-            showAlert('Erreur de connexion. Veuillez réessayer plus tard.', 'error');
+            showAlert('Erreur de connexion. Veuillez réessayer plus tard.', 'error', false);
         } finally {
             loading.style.display = 'none';
             submitBtn.disabled = false;
         }
     }
     
-    function showAlert(message, type) {
+    function showAlert(message, type, autoHide = false) {
         const container = document.getElementById('alertContainer');
+        
+        // Vérifier si le conteneur existe, sinon le créer
+        if (!container) {
+            const newContainer = document.createElement('div');
+            newContainer.id = 'alertContainer';
+            document.querySelector('.container').insertBefore(newContainer, document.querySelector('.container').firstChild);
+        }
+        
+        const alertContainer = document.getElementById('alertContainer');
         const alert = document.createElement('div');
         alert.className = `alert alert-${type}`;
         alert.textContent = message;
         alert.style.display = 'block';
         
-        container.innerHTML = '';
-        container.appendChild(alert);
+        // Ajouter un bouton de fermeture si on veut pouvoir le fermer manuellement
+        if (!autoHide) {
+            const closeBtn = document.createElement('span');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.cssText = 'float: right; cursor: pointer; font-weight: bold; margin-left: 10px;';
+            closeBtn.onclick = function() {
+                alert.style.display = 'none';
+            };
+            alert.appendChild(closeBtn);
+        }
         
-        setTimeout(() => {
-            alert.style.display = 'none';
-        }, 5000);
+        alertContainer.appendChild(alert);
+        
+        // Auto-hide uniquement si demandé
+        if (autoHide) {
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
     }
     </script>
 </body>
