@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking - Chez Sixtine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .logement-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .logement-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .logement-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .logement-capacity {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .price-calculator {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .price-display {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
+        .price-breakdown {
+            font-size: 0.7em;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
+        .btn-reserver {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 15px;
+        }
+        
+        .btn-reserver:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-reserver:active {
+            transform: translateY(0);
+        }
+        
+        .options-extras {
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        
+        .checkbox-group {
+            margin: 10px 0;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .btn-submit:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-retour {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #999 0%, #777 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        
+        .btn-retour:hover {
+            opacity: 0.9;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .confirmation-success,
+        .booking-form {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 600px;
+            margin: 50px auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .booking-form {
+            text-align: left;
+        }
+
+        .booking-form h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .confirmation-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+
+        .confirmation-success h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .confirmation-success p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .confirmation-success .check-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .booking-summary {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            flex: 0 1 auto;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .logement-card {
+            display: none;
+        }
+        
+        .logement-card.active {
+            display: block;
+        }
+
+        /* Styles for alert containers */
+        #bottomAlertContainer {
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        /* On mobile, bottom message is fixed */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .tab {
+                text-align: center;
+            }
+
+            #bottomAlertContainer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 10px;
+                margin: 0;
+                background: transparent;
+                z-index: 1000;
+                animation: slideUp 0.3s ease-out;
+            }
+            
+            @keyframes slideUp {
+                from {
+                    transform: translateY(100%);
+                }
+                to {
+                    transform: translateY(0);
+                }
+            }
+            
+            #bottomAlertContainer .alert {
+                margin-bottom: 0;
+                border-radius: 10px;
+            }
+        }
+
+        /* On desktop, bottom is not fixed */
+        @media (min-width: 769px) {
+            #bottomAlertContainer {
+                position: static;
+                background: transparent;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏡 Booking Chez Sixtine</h1>
+        <p class="subtitle">Select your dates and number of people to calculate the price</p>
+        
+        <div id="alertContainer"></div>
+
+        <div class="tabs">
+            <button type="button" class="tab active" data-logement="tour">La Tour</button>
+            <button type="button" class="tab" data-logement="drome">La Drôme</button>
+            <button type="button" class="tab" data-logement="duchesse">La Duchesse</button>
+            <button type="button" class="tab" data-logement="studio">Le Studio</button>
+        </div>
+
+        <!-- La Tour d'Albon -->
+        <div class="logement-card active" data-logement="tour">
+            <div class="logement-header">
+                <div class="logement-name">La Tour d'Albon</div>
+                <div class="logement-capacity">2 to 5 people</div>
+            </div>
+            
+            <div class="price-calculator">
+                <div class="form-group">
+                    <label>Check-in date</label>
+                    <input type="date" class="date-arrivee" min="">
+                </div>
+                
+                <div class="form-group">
+                    <label>Check-out date</label>
+                    <input type="date" class="date-depart" min="">
+                </div>
+                
+                <div class="form-group">
+                    <label>Number of people</label>
+                    <select class="nb-personnes">
+                        <option value="">Select...</option>
+                        <option value="2">2 people (1 bed 180cm)</option>
+                        <option value="4">3-4 people (1 bed 180cm + 1 bed 140cm)</option>
+                        <option value="5">5 people (+extra bed)</option>
+                    </select>
+                </div>
+                
+                <div class="options-extras">
+                    <strong>Additional options:</strong>
+                    <div class="checkbox-group">
+                        <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
+                        <label style="display: inline; margin-left: 5px;">Breakfast (9€/p)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="opt-animal" value="10">
+                        <label style="display: inline;">Pet fee (10€)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="number" class="opt-repas" min="0" max="10" placeholder="Nb meals" style="width: auto; display: inline-block; margin-left: 0;">
+                        <label style="display: inline; margin-left: 5px;">Host meal (25€/pers)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="opt-bebe" value="20">
+                        <label style="display: inline;">Baby crib (20€)</label>
+                    </div>
+                </div>
+                
+                <div class="price-display">
+                    <div class="price-amount">Select your dates</div>
+                    <div class="price-breakdown"></div>
+                </div>
+            </div>
+            
+            <button class="btn-reserver" disabled>Book</button>
+        </div>
+
+        <!-- La Drôme -->
+        <div class="logement-card" data-logement="drome">
+            <div class="logement-header">
+                <div class="logement-name">La Drôme</div>
+                <div class="logement-capacity">1 to 3 people</div>
+            </div>
+            
+            <div class="price-calculator">
+                <div class="form-group">
+                    <label>Check-in date</label>
+                    <input type="date" class="date-arrivee" min="">
+                </div>
+                
+                <div class="form-group">
+                    <label>Check-out date</label>
+                    <input type="date" class="date-depart" min="">
+                </div>
+                
+                <div class="form-group">
+                    <label>Number of people</label>
+                    <select class="nb-personnes">
+                        <option value="">Select...</option>
+                        <option value="2">1-2 people (1 bed 180cm)</option>
+                        <option value="3">3 people (+extra bed)</option>
+                    </select>
+                </div>
+                
+                <div class="options-extras">
+                    <strong>Additional options:</strong>
+                    <div class="checkbox-group">
+                        <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
+                        <label style="display: inline; margin-left: 5px;">Breakfast (9€/p)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="opt-animal" value="10">
+                        <label style="display: inline;">Pet fee (10€)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="number" class="opt-repas" min="0" max="10" placeholder="Nb meals" style="width: auto; display: inline-block;">
+                        <label style="display: inline; margin-left: 5px;">Host meal (25€/pers)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="opt-bebe" value="20">
+                        <label style="display: inline;">Baby crib (20€)</label>
+                    </div>
+                </div>
+                
+                <div class="price-display">
+                    <div class="price-amount">Select your dates</div>
+                    <div class="price-breakdown"></div>
+                </div>
+            </div>
+            
+            <button class="btn-reserver" disabled>Book</button>
+        </div>
+
+        <!-- La Duchesse -->
+        <div class="logement-card" data-logement="duchesse">
+            <div class="logement-header">
+                <div class="logement-name">La Duchesse</div>
+                <div class="logement-capacity">1 to 3 people</div>
+            </div>
+            
+            <div class="price-calculator">
+                <div class="form-group">
+                    <label>Check-in date</label>
+                    <input type="date" class="date-arrivee" min="">
+                </div>
+                
+                <div class="form-group">
+                    <label>Check-out date</label>
+                    <input type="date" class="date-depart" min="">
+                </div>
+                
+                <div class="form-group">
+                    <label>Number of people</label>
+                    <select class="nb-personnes">
+                        <option value="">Select...</option>
+                        <option value="2">1-2 people (1 bed 160cm)</option>
+                        <option value="3">3 people (+extra bed)</option>
+                    </select>
+                </div>
+                
+                <div class="options-extras">
+                    <strong>Additional options:</strong>
+                    <div class="checkbox-group">
+                        <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
+                        <label style="display: inline; margin-left: 5px;">Breakfast (9€/p)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="opt-animal" value="10">
+                        <label style="display: inline;">Pet fee (10€)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="number" class="opt-repas" min="0" max="10" placeholder="Nb meals" style="width: auto; display: inline-block;">
+                        <label style="display: inline; margin-left: 5px;">Host meal (25€/pers)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="opt-bebe" value="20">
+                        <label style="display: inline;">Baby crib (20€)</label>
+                    </div>
+                </div>
+                
+                <div class="price-display">
+                    <div class="price-amount">Select your dates</div>
+                    <div class="price-breakdown"></div>
+                </div>
+            </div>
+            
+            <button class="btn-reserver" disabled>Book</button>
+        </div>
+
+        <!-- Le Studio -->
+        <div class="logement-card" data-logement="studio">
+            <div class="logement-header">
+                <div class="logement-name">Le Studio</div>
+                <div class="logement-capacity">1 to 3 people</div>
+            </div>
+            
+            <div class="price-calculator">
+                <div class="form-group">
+                    <label>Check-in date</label>
+                    <input type="date" class="date-arrivee" min="">
+                </div>
+                
+                <div class="form-group">
+                    <label>Check-out date</label>
+                    <input type="date" class="date-depart" min="">
+                </div>
+                
+                <div class="form-group">
+                    <label>Setup</label>
+                    <select class="nb-personnes">
+                        <option value="">Select...</option>
+                        <option value="1-120">1 person (bed 120cm)</option>
+                        <option value="2-140">1-2 people (bed 140cm)</option>
+                        <option value="3-combo">3 people (bed 120cm + bed 140cm)</option>
+                    </select>
+                </div>
+                
+                <div class="options-extras">
+                    <strong>Additional options:</strong>
+                    <div class="checkbox-group">
+                        <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
+                        <label style="display: inline; margin-left: 5px;">Breakfast (9€/p)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="opt-animal" value="10">
+                        <label style="display: inline;">Pet fee (10€)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="number" class="opt-repas" min="0" max="10" placeholder="Nb meals" style="width: auto; display: inline-block;">
+                        <label style="display: inline; margin-left: 5px;">Host meal (25€/pers)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="opt-bebe" value="20">
+                        <label style="display: inline;">Baby crib (20€)</label>
+                    </div>
+                </div>
+                
+                <div class="price-display">
+                    <div class="price-amount">Select your dates</div>
+                    <div class="price-breakdown"></div>
+                </div>
+            </div>
+            
+            <button class="btn-reserver" disabled>Book</button>
+        </div>
+
+        <!-- Integrated booking form (hidden by default) -->
+        <div id="bookingFormContainer" style="display: none;">
+            <div class="booking-form">
+                <h2>Finalize your booking</h2>
+                
+                <div id="bookingSummary" class="booking-summary"></div>
+                
+                <form id="reservationForm">
+                    <div class="form-group">
+                        <label>Last Name *</label>
+                        <input type="text" id="nom" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>First Name *</label>
+                        <input type="text" id="prenom" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Phone *</label>
+                        <input type="tel" id="telephone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Address *</label>
+                        <input type="text" id="adresse" placeholder="Street number and name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>City *</label>
+                        <input type="text" id="ville" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Postal code *</label>
+                        <input type="text" id="code_postal" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Country *</label>
+                        <select id="pays" required>
+                            <option value="">Select...</option>
+                            <option value="France" selected>France</option>
+                            <option value="Germany">Germany</option>
+                            <option value="Belgium">Belgium</option>
+                            <option value="Spain">Spain</option>
+                            <option value="Luxembourg">Luxembourg</option>
+                            <option value="Netherlands">Netherlands</option>
+                            <option value="Poland">Poland</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Switzerland">Switzerland</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Message / Special requests</label>
+                        <textarea id="message" placeholder="Arrival time, special requests..."></textarea>
+                    </div>
+                    
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Checking availability...</p>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">Confirm booking</button>
+                    <button type="button" class="btn-retour" onclick="returnToBooking()">← Back</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Container for bottom alerts -->
+        <div id="bottomAlertContainer"></div>
+    </div>
+    
+<script>
+    // Configuration
+    const WEBHOOK_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chez-sixtine-reservation';
+    const CHECK_DISPO_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chez-sixtine-check-dispo';
+    
+    // Price grids
+    const PRIX = {
+        tour: {
+            2: { semaine: 85, weekend: 89 },
+            4: { semaine: 105, weekend: 109 },
+            5: { couchageSupp: 30 }
+        },
+        drome: {
+            2: { semaine: 75, weekend: 79 },
+            3: { couchageSupp: 30 }
+        },
+        duchesse: {
+            2: { semaine: 65, weekend: 69 },
+            3: { couchageSupp: 30 }
+        },
+        studio: {
+            '1-120': { semaine: 95, weekend: 99 },
+            '2-140': { semaine: 105, weekend: 109 },
+            '3-combo': { semaine: 125, weekend: 129 }
+        }
+    };
+    
+    const TAXE_SEJOUR = 0.70;
+    
+    // Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('.date-arrivee').forEach(input => {
+            input.min = today;
+        });
+
+        // === TAB MANAGEMENT ===
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Get accommodation ID
+                const logementId = this.getAttribute('data-logement');
+                
+                // Hide all accommodation cards
+                document.querySelectorAll('.logement-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                
+                // Show corresponding card
+                const cardToShow = document.querySelector(`.logement-card[data-logement="${logementId}"]`);
+                if (cardToShow) {
+                    cardToShow.classList.add('active');
+                    
+                    // Recalculate price for this card
+                    calculatePrice(cardToShow, logementId);
+                }
+            });
+        });
+        
+        // Initialize default values for each card
+        document.querySelectorAll('.logement-card').forEach(card => {
+            const logement = card.dataset.logement;
+            
+            // Set number of people to 2 by default
+            const nbPersonnesSelect = card.querySelector('.nb-personnes');
+            if (nbPersonnesSelect) {
+                // Select option with value "2"
+                for (let i = 0; i < nbPersonnesSelect.options.length; i++) {
+                    if (nbPersonnesSelect.options[i].value === '2') {
+                        nbPersonnesSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            // Handle check-in date to set check-out date to next day
+            const dateArriveeInput = card.querySelector('.date-arrivee');
+            const dateDepartInput = card.querySelector('.date-depart');
+            
+            if (dateArriveeInput && dateDepartInput) {
+                dateArriveeInput.addEventListener('change', function() {
+                    if (this.value) {
+                        const dateArrivee = new Date(this.value);
+                        const dateDepart = new Date(dateArrivee);
+                        dateDepart.setDate(dateDepart.getDate() + 1);
+                        
+                        // Format date as YYYY-MM-DD
+                        const year = dateDepart.getFullYear();
+                        const month = String(dateDepart.getMonth() + 1).padStart(2, '0');
+                        const day = String(dateDepart.getDate()).padStart(2, '0');
+                        
+                        dateDepartInput.value = `${year}-${month}-${day}`;
+                        
+                        // Recalculate price
+                        calculatePrice(card, logement);
+                    }
+                });
+            }
+            
+            // Calculate price on every change
+            card.querySelectorAll('.date-arrivee, .date-depart, .nb-personnes, .opt-petitdej, .opt-animal, .opt-repas, .opt-bebe').forEach(el => {
+                el.addEventListener('change', () => calculatePrice(card, logement));
+                el.addEventListener('input', () => calculatePrice(card, logement));
+            });
+            
+            // Initialize price (with delay to ensure DOM is ready)
+            setTimeout(() => calculatePrice(card, logement), 200);
+            
+            // Book button
+            const btnReserver = card.querySelector('.btn-reserver');
+            if (btnReserver) {
+                btnReserver.addEventListener('click', () => openBookingForm(card, logement));
+            }
+        });
+        
+        // Form
+        const reservationForm = document.getElementById('reservationForm');
+        if (reservationForm) {
+            reservationForm.addEventListener('submit', submitReservation);
+        }
+    });
+    
+    function calculatePrice(card, logement) {
+        // Ensure card is accessible
+        if (!card) return;
+        
+        const arrivee = card.querySelector('.date-arrivee')?.value;
+        const depart = card.querySelector('.date-depart')?.value;
+        const nbPersonnes = card.querySelector('.nb-personnes')?.value;
+        const priceDisplay = card.querySelector('.price-amount');
+        const breakdown = card.querySelector('.price-breakdown');
+        const btnReserver = card.querySelector('.btn-reserver');
+        
+        if (!arrivee || !depart || !nbPersonnes) {
+            if (priceDisplay) priceDisplay.textContent = 'Select your dates';
+            if (breakdown) breakdown.textContent = '';
+            if (btnReserver) btnReserver.disabled = true;
+            return;
+        }
+        
+        const dateArrivee = new Date(arrivee);
+        const dateDepart = new Date(depart);
+        
+        if (dateDepart <= dateArrivee) {
+            if (priceDisplay) priceDisplay.textContent = 'Invalid dates';
+            if (breakdown) breakdown.textContent = '';
+            if (btnReserver) btnReserver.disabled = true;
+            return;
+        }
+        
+        const nbNuits = Math.ceil((dateDepart - dateArrivee) / (1000 * 60 * 60 * 24));
+        
+        // Calculate base price
+        let prixTotal = 0;
+        let details = [];
+        
+        // Night prices
+        const grille = PRIX[logement]?.[nbPersonnes];
+        
+        if (!grille) {
+            if (priceDisplay) priceDisplay.textContent = 'Invalid configuration';
+            return;
+        }
+        
+        // Determine if weekend (Friday/Saturday) or summer holidays (July-August)
+        let nbWeekend = 0;
+        let nbSemaine = 0;
+        
+        for (let d = new Date(dateArrivee); d < dateDepart; d.setDate(d.getDate() + 1)) {
+            const day = d.getDay();
+            const month = d.getMonth();
+            
+            // Weekend = Friday/Saturday OR July/August
+            if (day === 5 || day === 6 || month === 6 || month === 7) {
+                nbWeekend++;
+            } else {
+                nbSemaine++;
+            }
+        }
+        
+        if (grille.semaine && grille.weekend) {
+            prixTotal += (nbSemaine * grille.semaine) + (nbWeekend * grille.weekend);
+            
+            let detailNuits = `${nbNuits} night${nbNuits > 1 ? 's' : ''}`;
+            if (nbSemaine > 0 && nbWeekend > 0) {
+                detailNuits += ` (${nbSemaine}×${grille.semaine}€ + ${nbWeekend}×${grille.weekend}€)`;
+            } else if (nbSemaine > 0) {
+                detailNuits += ` (${nbSemaine}×${grille.semaine}€)`;
+            } else {
+                detailNuits += ` (${nbWeekend}×${grille.weekend}€)`;
+            }
+            
+            details.push(detailNuits);
+        } else if (grille.couchageSupp) {
+            const basePrice = logement === 'tour' ? (nbWeekend > nbSemaine ? 109 : 105) : 
+                              logement === 'drome' ? (nbWeekend > nbSemaine ? 79 : 75) :
+                              (nbWeekend > nbSemaine ? 69 : 65);
+            prixTotal += (nbNuits * basePrice) + (nbNuits * grille.couchageSupp);
+            details.push(`${nbNuits} night${nbNuits > 1 ? 's' : ''} + extra bed`);
+        }
+        
+        // Tourist tax
+        const nbPersonnesNum = nbPersonnes.includes('-') ? parseInt(nbPersonnes.split('-')[0]) : parseInt(nbPersonnes);
+        const taxeSejour = TAXE_SEJOUR * nbPersonnesNum * nbNuits;
+        prixTotal += taxeSejour;
+        details.push(`Tourist tax: ${taxeSejour.toFixed(2)}€`);
+        
+        // Options
+        const petitdej = parseInt(card.querySelector('.opt-petitdej')?.value || 0);
+        if (petitdej > 0) {
+            const prixPetitDej = petitdej * 9;
+            prixTotal += prixPetitDej;
+            details.push(`${petitdej} breakfast: ${prixPetitDej}€`);
+        }
+        
+        const animal = card.querySelector('.opt-animal')?.checked || false;
+        if (animal) {
+            prixTotal += 10;
+            details.push('Pet fee: 10€');
+        }
+        
+        const repas = parseInt(card.querySelector('.opt-repas')?.value || 0);
+        if (repas > 0) {
+            const prixRepas = repas * 25;
+            prixTotal += prixRepas;
+            details.push(`${repas} host meals: ${prixRepas}€`);
+        }
+        
+        const bebe = card.querySelector('.opt-bebe')?.checked || false;
+        if (bebe) {
+            prixTotal += 20;
+            details.push('Baby crib: 20€');
+        }
+        
+        if (priceDisplay) priceDisplay.textContent = `${prixTotal.toFixed(2)}€`;
+        if (breakdown) breakdown.textContent = details.join(' • ');
+        if (btnReserver) btnReserver.disabled = false;
+    }
+    
+    async function openBookingForm(card, logement) {
+        const arrivee = card.querySelector('.date-arrivee').value;
+        const depart = card.querySelector('.date-depart').value;
+        const nbPersonnes = card.querySelector('.nb-personnes').value;
+        const prixTotal = card.querySelector('.price-amount').textContent;
+        
+        if (!arrivee || !depart || !nbPersonnes) {
+            await showAlert('Please select all information', 'error', false);
+            return;
+        }
+        
+        await showAlert('⏳ Checking availability...', 'info', false);
+        
+        try {
+            const checkResponse = await fetch(CHECK_DISPO_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    logement: logement,
+                    arrivee: arrivee,
+                    depart: depart
+                })
+            });
+            
+            const checkResult = await checkResponse.json();
+            
+            if (!checkResult.available) {
+                await showAlert('❌ Dates not available. Please choose other dates or call us at +33 4 75 00 00 00 for more availability.', 'error', false);
+                return;
+            }
+            
+            await showAlert('✅ Dates available!', 'success', false);
+            
+        } catch (error) {
+            await showAlert('⚠️ Unable to check availability. Please try again or call us.', 'error', false);
+            return;
+        }
+        
+        const logementNames = {
+            tour: 'La Tour d\'Albon',
+            drome: 'La Drôme',
+            duchesse: 'La Duchesse',
+            studio: 'Le Studio'
+        };
+        
+        document.getElementById('bookingSummary').innerHTML = `
+            <strong>Accommodation:</strong> ${logementNames[logement]}<br>
+            <strong>From:</strong> ${new Date(arrivee).toLocaleDateString('en-US')} 
+            <strong>to:</strong> ${new Date(depart).toLocaleDateString('en-US')}<br>
+            <strong>People:</strong> ${nbPersonnes}<br>
+            <strong>Total price:</strong> ${prixTotal}
+        `;
+        
+        window.currentReservation = {
+            logement,
+            arrivee,
+            depart,
+            nbPersonnes,
+            prixTotal,
+            petitdej: parseInt(card.querySelector('.opt-petitdej')?.value || 0),
+            animal: card.querySelector('.opt-animal')?.checked || false,
+            repas: parseInt(card.querySelector('.opt-repas')?.value || 0),
+            bebe: card.querySelector('.opt-bebe')?.checked || false
+        };
+        
+        // Hide tabs and cards
+        document.querySelector('.tabs').style.display = 'none';
+        document.querySelectorAll('.logement-card').forEach(card => {
+            card.style.display = 'none';
+        });
+        
+        // Show form
+        document.getElementById('bookingFormContainer').style.display = 'block';
+        
+        // Scroll to form
+        document.getElementById('bookingFormContainer').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function returnToBooking() {
+        // Hide form
+        document.getElementById('bookingFormContainer').style.display = 'none';
+        
+        // Show tabs and cards
+        document.querySelector('.tabs').style.display = 'flex';
+        
+        // Show active card
+        const activeTab = document.querySelector('.tab.active');
+        if (activeTab) {
+            const logementId = activeTab.getAttribute('data-logement');
+            const cardToShow = document.querySelector(`.logement-card[data-logement="${logementId}"]`);
+            if (cardToShow) {
+                cardToShow.style.display = 'block';
+            }
+        }
+        
+        // Reset form
+        document.getElementById('reservationForm').reset();
+    }
+    
+    async function submitReservation(e) {
+        e.preventDefault();
+        
+        const loading = document.querySelector('.loading');
+        const submitBtn = document.querySelector('.btn-submit');
+        
+        loading.style.display = 'block';
+        submitBtn.disabled = true;
+        
+        const data = {
+            ...window.currentReservation,
+            nom: document.getElementById('nom').value,
+            prenom: document.getElementById('prenom').value,
+            email: document.getElementById('email').value,
+            telephone: document.getElementById('telephone').value,
+            adresse: document.getElementById('adresse').value,
+            ville: document.getElementById('ville').value,
+            code_postal: document.getElementById('code_postal').value,
+            pays: document.getElementById('pays').value,
+            message: document.getElementById('message').value
+        };
+        
+        try {
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Hide form
+                document.getElementById('bookingFormContainer').style.display = 'none';
+                
+                // Get main container
+                const container = document.querySelector('.container');
+                
+                // Save title and subtitle
+                const title = container.querySelector('h1').outerHTML;
+                const subtitle = container.querySelector('.subtitle').outerHTML;
+                
+                // Clear container
+                container.innerHTML = '';
+                
+                // Add title and subtitle
+                container.insertAdjacentHTML('afterbegin', title);
+                container.insertAdjacentHTML('beforeend', subtitle);
+                
+                // Add top alert container
+                const topAlertContainer = document.createElement('div');
+                topAlertContainer.id = 'alertContainer';
+                container.appendChild(topAlertContainer);
+                
+                // Add bottom alert container
+                const bottomAlertContainer = document.createElement('div');
+                bottomAlertContainer.id = 'bottomAlertContainer';
+                container.appendChild(bottomAlertContainer);
+                
+                // Show confirmation message
+                const confirmationHTML = `
+                    <div class="confirmation-success">
+                        <div class="check-icon">✅</div>
+                        <h2>Booking sent successfully!</h2>
+                        <p><strong>Thank you ${data.prenom} ${data.nom}!</strong></p>
+                        <p>We have received your booking request.</p>
+                        <p>📧 A confirmation email has been sent to:<br><strong>${data.email}</strong></p>
+                        <p style="margin-top: 30px; font-size: 0.9em; opacity: 0.9;">
+                            We will contact you very soon to finalize your booking.
+                        </p>
+                    </div>
+                `;
+                
+                container.insertAdjacentHTML('beforeend', confirmationHTML);
+                
+                // Scroll to top after reconstruction
+                setTimeout(() => {
+                    const newTopAlertContainer = document.getElementById('alertContainer');
+                    if (newTopAlertContainer) {
+                        newTopAlertContainer.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'start' 
+                        });
+                    } else {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }, 100);
+                
+                // Show permanent success message
+                await showAlert('✅ Booking confirmed! An email has been sent to you.', 'success', false);
+                
+            } else {
+                await showAlert(result.message || 'Error during booking. Please try again.', 'error', false);
+            }
+        } catch (error) {
+            await showAlert('Connection error. Please try again later.', 'error', false);
+        } finally {
+            loading.style.display = 'none';
+            submitBtn.disabled = false;
+        }
+    }
+    
+    function showAlert(message, type, autoHide = false) {
+        return new Promise((resolve) => {
+            const isMobile = window.innerWidth < 768;
+            
+            // Check if top container exists, create if not
+            let topAlertContainer = document.getElementById('alertContainer');
+            if (!topAlertContainer) {
+                topAlertContainer = document.createElement('div');
+                topAlertContainer.id = 'alertContainer';
+                const container = document.querySelector('.container');
+                if (container) {
+                    container.insertBefore(topAlertContainer, container.firstChild);
+                }
+            }
+            
+            // Check if bottom container exists, create if not
+            let bottomAlertContainer = document.getElementById('bottomAlertContainer');
+            if (!bottomAlertContainer) {
+                bottomAlertContainer = document.createElement('div');
+                bottomAlertContainer.id = 'bottomAlertContainer';
+                bottomAlertContainer.style.marginTop = '20px';
+                const container = document.querySelector('.container');
+                if (container) {
+                    container.appendChild(bottomAlertContainer);
+                }
+            }
+            
+            // CLEAR ALL OLD MESSAGES
+            topAlertContainer.innerHTML = '';
+            bottomAlertContainer.innerHTML = '';
+            
+            // Function to create an alert
+            const createAlertElement = () => {
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type}`;
+                alert.style.display = 'block';
+                alert.style.padding = '15px';
+                alert.style.marginBottom = '10px';
+                alert.style.borderRadius = '8px';
+                alert.style.position = 'relative';
+                alert.style.zIndex = '1000';
+                alert.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
+                alert.style.fontSize = isMobile ? '14px' : '16px';
+                alert.style.fontWeight = 'bold';
+                
+                // Create message content
+                const messageSpan = document.createElement('span');
+                messageSpan.textContent = message;
+                alert.appendChild(messageSpan);
+                
+                // Add close button for manual closing
+                if (!autoHide) {
+                    const closeBtn = document.createElement('span');
+                    closeBtn.innerHTML = '&times;';
+                    closeBtn.style.cssText = 'float: right; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 20px; line-height: 20px;';
+                    closeBtn.onclick = function() {
+                        alert.style.display = 'none';
+                    };
+                    alert.appendChild(closeBtn);
+                }
+                
+                return alert;
+            };
+            
+            if (isMobile) {
+                // On mobile: ONLY ONE message at the bottom
+                const bottomAlert = createAlertElement();
+                bottomAlertContainer.appendChild(bottomAlert);
+                
+                // Smooth scroll to bottom to see the message
+                setTimeout(() => {
+                    bottomAlertContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'end' 
+                    });
+                    resolve();
+                }, 50);
+            } else {
+                // On desktop: TWO messages (top and bottom)
+                const topAlert = createAlertElement();
+                topAlertContainer.appendChild(topAlert);
+                
+                const bottomAlert = createAlertElement();
+                bottomAlertContainer.appendChild(bottomAlert);
+                
+                // Scroll to top to see top message
+                setTimeout(() => {
+                    topAlertContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                    
+                    // Backup scroll
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    }, 50);
+                    
+                    resolve();
+                }, 50);
+            }
+            
+            // Auto-hide if requested
+            if (autoHide) {
+                setTimeout(() => {
+                    if (isMobile) {
+                        bottomAlertContainer.innerHTML = '';
+                    } else {
+                        topAlertContainer.innerHTML = '';
+                        bottomAlertContainer.innerHTML = '';
+                    }
+                }, 5000);
+            }
+        });
+    }
+    </script>
+</body>
+</html>
