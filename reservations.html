@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservation - Chez Sixtine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .logement-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        
+        .logement-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .logement-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .logement-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .logement-capacity {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .price-calculator {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .price-display {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
+        .price-breakdown {
+            font-size: 0.7em;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
+        .btn-reserver {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 15px;
+        }
+        
+        .btn-reserver:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-reserver:active {
+            transform: translateY(0);
+        }
+        
+        .options-extras {
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        
+        .checkbox-group {
+            margin: 10px 0;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background: white;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .close-modal:hover {
+            color: #333;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .btn-submit:hover {
+            opacity: 0.9;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏡 Réservation Chez Sixtine</h1>
+        <p class="subtitle">Sélectionnez vos dates et le nombre de personnes pour calculer le prix</p>
+        
+        <div id="alertContainer"></div>
+        
+        <div class="grid">
+            <!-- La Tour d'Albon -->
+            <div class="logement-card" data-logement="tour">
+                <div class="logement-header">
+                    <div class="logement-name">La Tour d'Albon</div>
+                    <div class="logement-capacity">2 à 5 personnes</div>
+                </div>
+                
+                <div class="price-calculator">
+                    <div class="form-group">
+                        <label>Date d'arrivée</label>
+                        <input type="date" class="date-arrivee" min="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Date de départ</label>
+                        <input type="date" class="date-depart" min="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nombre de personnes</label>
+                        <select class="nb-personnes">
+                            <option value="">Sélectionner...</option>
+                            <option value="2">2 personnes (1 lit 180)</option>
+                            <option value="4">3-4 personnes (1 lit 180 + 1 lit 140)</option>
+                            <option value="5">5 personnes (+couchage suppl.)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="options-extras">
+                        <strong>Options supplémentaires :</strong>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="opt-animal" value="10">
+                            <label style="display: inline;">Forfait Animal (10€)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="number" class="opt-repas" min="0" max="10" placeholder="Nb repas d'hôtes" style="width: auto; display: inline-block; margin-left: 0;">
+                            <label style="display: inline; margin-left: 5px;">Repas d'hôtes (25€/pers)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="opt-bebe" value="20">
+                            <label style="display: inline;">Lit bébé (20€)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="price-display">
+                        <div class="price-amount">Sélectionnez vos dates</div>
+                        <div class="price-breakdown"></div>
+                    </div>
+                </div>
+                
+                <button class="btn-reserver" disabled>Réserver</button>
+            </div>
+            
+            <!-- La Drôme -->
+            <div class="logement-card" data-logement="drome">
+                <div class="logement-header">
+                    <div class="logement-name">La Drôme</div>
+                    <div class="logement-capacity">1 à 3 personnes</div>
+                </div>
+                
+                <div class="price-calculator">
+                    <div class="form-group">
+                        <label>Date d'arrivée</label>
+                        <input type="date" class="date-arrivee" min="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Date de départ</label>
+                        <input type="date" class="date-depart" min="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nombre de personnes</label>
+                        <select class="nb-personnes">
+                            <option value="">Sélectionner...</option>
+                            <option value="2">1-2 personnes (1 lit 180)</option>
+                            <option value="3">3 personnes (+couchage suppl.)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="options-extras">
+                        <strong>Options supplémentaires :</strong>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="opt-animal" value="10">
+                            <label style="display: inline;">Forfait Animal (10€)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="number" class="opt-repas" min="0" max="10" placeholder="Nb repas d'hôtes" style="width: auto; display: inline-block;">
+                            <label style="display: inline; margin-left: 5px;">Repas d'hôtes (25€/pers)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="opt-bebe" value="20">
+                            <label style="display: inline;">Lit bébé (20€)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="price-display">
+                        <div class="price-amount">Sélectionnez vos dates</div>
+                        <div class="price-breakdown"></div>
+                    </div>
+                </div>
+                
+                <button class="btn-reserver" disabled>Réserver</button>
+            </div>
+            
+            <!-- La Duchesse -->
+            <div class="logement-card" data-logement="duchesse">
+                <div class="logement-header">
+                    <div class="logement-name">La Duchesse</div>
+                    <div class="logement-capacity">1 à 3 personnes</div>
+                </div>
+                
+                <div class="price-calculator">
+                    <div class="form-group">
+                        <label>Date d'arrivée</label>
+                        <input type="date" class="date-arrivee" min="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Date de départ</label>
+                        <input type="date" class="date-depart" min="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nombre de personnes</label>
+                        <select class="nb-personnes">
+                            <option value="">Sélectionner...</option>
+                            <option value="2">1-2 personnes (1 lit 160)</option>
+                            <option value="3">3 personnes (+couchage suppl.)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="options-extras">
+                        <strong>Options supplémentaires :</strong>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="opt-animal" value="10">
+                            <label style="display: inline;">Forfait Animal (10€)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="number" class="opt-repas" min="0" max="10" placeholder="Nb repas d'hôtes" style="width: auto; display: inline-block;">
+                            <label style="display: inline; margin-left: 5px;">Repas d'hôtes (25€/pers)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="opt-bebe" value="20">
+                            <label style="display: inline;">Lit bébé (20€)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="price-display">
+                        <div class="price-amount">Sélectionnez vos dates</div>
+                        <div class="price-breakdown"></div>
+                    </div>
+                </div>
+                
+                <button class="btn-reserver" disabled>Réserver</button>
+            </div>
+            
+            <!-- Le Studio -->
+            <div class="logement-card" data-logement="studio">
+                <div class="logement-header">
+                    <div class="logement-name">Le Studio</div>
+                    <div class="logement-capacity">1 à 3 personnes</div>
+                </div>
+                
+                <div class="price-calculator">
+                    <div class="form-group">
+                        <label>Date d'arrivée</label>
+                        <input type="date" class="date-arrivee" min="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Date de départ</label>
+                        <input type="date" class="date-depart" min="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Configuration</label>
+                        <select class="nb-personnes">
+                            <option value="">Sélectionner...</option>
+                            <option value="1-120">1 personne (lit 120)</option>
+                            <option value="2-140">1-2 personnes (lit 140)</option>
+                            <option value="3-combo">3 personnes (lit 120 + lit 140)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="options-extras">
+                        <strong>Options supplémentaires :</strong>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="opt-animal" value="10">
+                            <label style="display: inline;">Forfait Animal (10€)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="number" class="opt-repas" min="0" max="10" placeholder="Nb repas d'hôtes" style="width: auto; display: inline-block;">
+                            <label style="display: inline; margin-left: 5px;">Repas d'hôtes (25€/pers)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="opt-bebe" value="20">
+                            <label style="display: inline;">Lit bébé (20€)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="price-display">
+                        <div class="price-amount">Sélectionnez vos dates</div>
+                        <div class="price-breakdown"></div>
+                    </div>
+                </div>
+                
+                <button class="btn-reserver" disabled>Réserver</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de réservation -->
+    <div id="reservationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 style="margin-bottom: 20px; color: #667eea;">Finaliser votre réservation</h2>
+            
+            <div id="reservationSummary" style="background: #f0f4ff; padding: 15px; border-radius: 10px; margin-bottom: 20px;"></div>
+            
+            <form id="reservationForm">
+                <div class="form-group">
+                    <label>Nom *</label>
+                    <input type="text" id="nom" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Prénom *</label>
+                    <input type="text" id="prenom" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Téléphone *</label>
+                    <input type="tel" id="telephone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Message / Demandes spéciales</label>
+                    <textarea id="message" placeholder="Heure d'arrivée, demandes particulières..."></textarea>
+                </div>
+                
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Vérification des disponibilités...</p>
+                </div>
+                
+                <button type="submit" class="btn-submit">Confirmer la réservation</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Configuration
+        const WEBHOOK_URL = 'VOTRE_URL_N8N_WEBHOOK_ICI'; // À remplacer
+        
+        // Grilles tarifaires
+        const PRIX = {
+            tour: {
+                2: { semaine: 85, weekend: 89 },
+                4: { semaine: 105, weekend: 109 },
+                5: { couchageSupp: 30 }
+            },
+            drome: {
+                2: { semaine: 75, weekend: 79 },
+                3: { couchageSupp: 30 }
+            },
+            duchesse: {
+                2: { semaine: 65, weekend: 69 },
+                3: { couchageSupp: 30 }
+            },
+            studio: {
+                '1-120': { semaine: 95, weekend: 99 },
+                '2-140': { semaine: 105, weekend: 109 },
+                '3-combo': { semaine: 125, weekend: 129 }
+            }
+        };
+        
+        const TAXE_SEJOUR = 0.70;
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            // Définir date minimale à aujourd'hui
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelectorAll('.date-arrivee').forEach(input => {
+                input.min = today;
+            });
+            
+            // Écouteurs pour chaque carte
+            document.querySelectorAll('.logement-card').forEach(card => {
+                const logement = card.dataset.logement;
+                
+                // Calculer prix à chaque changement
+                card.querySelectorAll('.date-arrivee, .date-depart, .nb-personnes, .opt-animal, .opt-repas, .opt-bebe').forEach(el => {
+                    el.addEventListener('change', () => calculatePrice(card, logement));
+                    el.addEventListener('input', () => calculatePrice(card, logement));
+                });
+                
+                // Bouton réserver
+                card.querySelector('.btn-reserver').addEventListener('click', () => openReservationModal(card, logement));
+            });
+            
+            // Modal
+            document.querySelector('.close-modal').addEventListener('click', closeModal);
+            document.getElementById('reservationForm').addEventListener('submit', submitReservation);
+            
+            // Fermer modal en cliquant à l'extérieur
+            window.addEventListener('click', (e) => {
+                if (e.target.id === 'reservationModal') closeModal();
+            });
+        });
+        
+        function calculatePrice(card, logement) {
+            const arrivee = card.querySelector('.date-arrivee').value;
+            const depart = card.querySelector('.date-depart').value;
+            const nbPersonnes = card.querySelector('.nb-personnes').value;
+            const priceDisplay = card.querySelector('.price-amount');
+            const breakdown = card.querySelector('.price-breakdown');
+            const btnReserver = card.querySelector('.btn-reserver');
+            
+            if (!arrivee || !depart || !nbPersonnes) {
+                priceDisplay.textContent = 'Sélectionnez vos dates';
+                breakdown.textContent = '';
+                btnReserver.disabled = true;
+                return;
+            }
+            
+            const dateArrivee = new Date(arrivee);
+            const dateDepart = new Date(depart);
+            
+            if (dateDepart <= dateArrivee) {
+                priceDisplay.textContent = 'Dates invalides';
+                breakdown.textContent = '';
+                btnReserver.disabled = true;
+                return;
+            }
+            
+            const nbNuits = Math.ceil((dateDepart - dateArrivee) / (1000 * 60 * 60 * 24));
+            
+            // Calculer prix de base
+            let prixTotal = 0;
+            let details = [];
+            
+            // Prix nuitées
+            let prixNuit = 0;
+            const grille = PRIX[logement][nbPersonnes];
+            
+            if (!grille) {
+                priceDisplay.textContent = 'Configuration invalide';
+                return;
+            }
+            
+            // Déterminer si weekend (vendredi/samedi) ou vacances d'été (juillet-août)
+            let nbWeekend = 0;
+            let nbSemaine = 0;
+            
+            for (let d = new Date(dateArrivee); d < dateDepart; d.setDate(d.getDate() + 1)) {
+                const day = d.getDay();
+                const month = d.getMonth(); // 0-11 (0=janvier, 6=juillet, 7=août)
+                
+                // Weekend = vendredi/samedi OU juillet/août (vacances scolaires)
+                if (day === 5 || day === 6 || month === 6 || month === 7) {
+                    nbWeekend++;
+                } else {
+                    nbSemaine++;
+                }
+            }
+            
+            if (grille.semaine && grille.weekend) {
+                prixTotal += (nbSemaine * grille.semaine) + (nbWeekend * grille.weekend);
+                
+                // Affichage intelligent : ne pas afficher "0×prix"
+                let detailNuits = `${nbNuits} nuit${nbNuits > 1 ? 's' : ''}`;
+                if (nbSemaine > 0 && nbWeekend > 0) {
+                    detailNuits += ` (${nbSemaine}×${grille.semaine}€ + ${nbWeekend}×${grille.weekend}€)`;
+                } else if (nbSemaine > 0) {
+                    detailNuits += ` (${nbSemaine}×${grille.semaine}€)`;
+                } else {
+                    detailNuits += ` (${nbWeekend}×${grille.weekend}€)`;
+                }
+                
+                details.push(detailNuits);
+            } else if (grille.couchageSupp) {
+                const basePrice = logement === 'tour' ? (nbWeekend > nbSemaine ? 109 : 105) : 
+                                  logement === 'drome' ? (nbWeekend > nbSemaine ? 79 : 75) :
+                                  (nbWeekend > nbSemaine ? 69 : 65);
+                prixTotal += (nbNuits * basePrice) + (nbNuits * grille.couchageSupp);
+                details.push(`${nbNuits} nuit${nbNuits > 1 ? 's' : ''} + couchage suppl.`);
+            }
+            
+            // Taxe de séjour
+            const nbPersonnesNum = nbPersonnes.includes('-') ? parseInt(nbPersonnes.split('-')[0]) : parseInt(nbPersonnes);
+            const taxeSejour = TAXE_SEJOUR * nbPersonnesNum * nbNuits;
+            prixTotal += taxeSejour;
+            details.push(`Taxe séjour: ${taxeSejour.toFixed(2)}€`);
+            
+            // Options
+            const animal = card.querySelector('.opt-animal').checked;
+            if (animal) {
+                prixTotal += 10;
+                details.push('Forfait animal: 10€');
+            }
+            
+            const repas = parseInt(card.querySelector('.opt-repas').value || 0);
+            if (repas > 0) {
+                const prixRepas = repas * 25;
+                prixTotal += prixRepas;
+                details.push(`${repas} repas d'hôtes: ${prixRepas}€`);
+            }
+            
+            const bebe = card.querySelector('.opt-bebe').checked;
+            if (bebe) {
+                prixTotal += 20;
+                details.push('Lit bébé: 20€');
+            }
+            
+            priceDisplay.textContent = `${prixTotal.toFixed(2)}€`;
+            breakdown.textContent = details.join(' • ');
+            btnReserver.disabled = false;
+        }
+        
+        function openReservationModal(card, logement) {
+            const arrivee = card.querySelector('.date-arrivee').value;
+            const depart = card.querySelector('.date-depart').value;
+            const nbPersonnes = card.querySelector('.nb-personnes').value;
+            const prixTotal = card.querySelector('.price-amount').textContent;
+            
+            const logementNames = {
+                tour: 'La Tour d\'Albon',
+                drome: 'La Drôme',
+                duchesse: 'La Duchesse',
+                studio: 'Le Studio'
+            };
+            
+            document.getElementById('reservationSummary').innerHTML = `
+                <strong>Logement :</strong> ${logementNames[logement]}<br>
+                <strong>Du :</strong> ${new Date(arrivee).toLocaleDateString('fr-FR')} 
+                <strong>au :</strong> ${new Date(depart).toLocaleDateString('fr-FR')}<br>
+                <strong>Personnes :</strong> ${nbPersonnes}<br>
+                <strong>Prix total :</strong> ${prixTotal}
+            `;
+            
+            // Stocker les données
+            window.currentReservation = {
+                logement,
+                arrivee,
+                depart,
+                nbPersonnes,
+                prixTotal,
+                animal: card.querySelector('.opt-animal').checked,
+                repas: parseInt(card.querySelector('.opt-repas').value || 0),
+                bebe: card.querySelector('.opt-bebe').checked
+            };
+            
+            document.getElementById('reservationModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('reservationModal').style.display = 'none';
+            document.getElementById('reservationForm').reset();
+        }
+        
+        async function submitReservation(e) {
+            e.preventDefault();
+            
+            const loading = document.querySelector('.loading');
+            const submitBtn = document.querySelector('.btn-submit');
+            
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+            
+            const data = {
+                ...window.currentReservation,
+                nom: document.getElementById('nom').value,
+                prenom: document.getElementById('prenom').value,
+                email: document.getElementById('email').value,
+                telephone: document.getElementById('telephone').value,
+                message: document.getElementById('message').value
+            };
+            
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Réservation envoyée avec succès ! Vous allez recevoir un email de confirmation.', 'success');
+                    closeModal();
+                } else {
+                    showAlert(result.message || 'Erreur lors de la réservation. Veuillez réessayer.', 'error');
+                }
+            } catch (error) {
+                showAlert('Erreur de connexion. Veuillez réessayer plus tard.', 'error');
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
+        
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.display = 'block';
+            
+            container.innerHTML = '';
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
