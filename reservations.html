@@ -1114,50 +1114,61 @@
         }
     }
     
-    function showAlert(message, type, autoHide = false) {
-        // Vérifier si le conteneur existe, sinon le créer
-        let alertContainer = document.getElementById('alertContainer');
-        if (!alertContainer) {
-            alertContainer = document.createElement('div');
-            alertContainer.id = 'alertContainer';
-            const container = document.querySelector('.container');
-            if (container) {
-                container.insertBefore(alertContainer, container.firstChild);
-            }
-        }
-        
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type}`;
-        alert.style.display = 'block';
-        alert.style.padding = '15px';
-        alert.style.marginBottom = '10px';
-        alert.style.borderRadius = '8px';
-        
-        // Créer le contenu du message
-        const messageSpan = document.createElement('span');
-        messageSpan.textContent = message;
-        alert.appendChild(messageSpan);
-        
-        // Ajouter un bouton de fermeture si on veut pouvoir le fermer manuellement
-        if (!autoHide) {
-            const closeBtn = document.createElement('span');
-            closeBtn.innerHTML = '&times;';
-            closeBtn.style.cssText = 'float: right; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 20px;';
-            closeBtn.onclick = function() {
-                alert.style.display = 'none';
-            };
-            alert.appendChild(closeBtn);
-        }
-        
-        alertContainer.appendChild(alert);
-        
-        // Auto-hide uniquement si demandé
-        if (autoHide) {
-            setTimeout(() => {
-                alert.style.display = 'none';
-            }, 5000);
+function showAlert(message, type, autoHide = false) {
+    // Vérifier si le conteneur existe, sinon le créer
+    let alertContainer = document.getElementById('alertContainer');
+    if (!alertContainer) {
+        alertContainer = document.createElement('div');
+        alertContainer.id = 'alertContainer';
+        const container = document.querySelector('.container');
+        if (container) {
+            container.insertBefore(alertContainer, container.firstChild);
         }
     }
+    
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type}`;
+    alert.style.display = 'block';
+    alert.style.padding = '15px';
+    alert.style.marginBottom = '10px';
+    alert.style.borderRadius = '8px';
+    
+    // Créer le contenu du message
+    const messageSpan = document.createElement('span');
+    messageSpan.textContent = message;
+    alert.appendChild(messageSpan);
+    
+    // Ajouter un bouton de fermeture si on veut pouvoir le fermer manuellement
+    if (!autoHide) {
+        const closeBtn = document.createElement('span');
+        closeBtn.innerHTML = '&times;';
+        closeBtn.style.cssText = 'float: right; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 20px;';
+        closeBtn.onclick = function() {
+            alert.style.display = 'none';
+        };
+        alert.appendChild(closeBtn);
+    }
+    
+    alertContainer.appendChild(alert);
+    
+    // SCROLL VERS LE HAUT DE LA PAGE
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+    
+    // Auto-hide uniquement si demandé
+    if (autoHide) {
+        setTimeout(() => {
+            alert.style.display = 'none';
+        }, 5000);
+    }
+}
+window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+});
+    
     </script>
 </body>
 </html>
