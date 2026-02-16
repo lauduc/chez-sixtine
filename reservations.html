@@ -964,7 +964,7 @@
         document.getElementById('reservationForm').reset();
     }
     
-   async function submitReservation(e) {
+ async function submitReservation(e) {
     e.preventDefault();
     
     const loading = document.querySelector('.loading');
@@ -999,11 +999,19 @@
             // Fermer la modal
             closeModal();
             
-            // Masquer les onglets et toutes les cartes
-            document.querySelector('.tabs').style.display = 'none';
-            document.querySelectorAll('.logement-card').forEach(card => {
-                card.style.display = 'none';
-            });
+            // Récupérer le conteneur principal
+            const container = document.querySelector('.container');
+            
+            // Vider le conteneur mais garder le titre et sous-titre originaux
+            const title = container.querySelector('h1').outerHTML;
+            const subtitle = container.querySelector('.subtitle').outerHTML;
+            
+            // Vider complètement le conteneur
+            container.innerHTML = '';
+            
+            // Ajouter le titre et sous-titre
+            container.insertAdjacentHTML('afterbegin', title);
+            container.insertAdjacentHTML('beforeend', subtitle);
             
             // Afficher le message de confirmation permanent
             const confirmationHTML = `
@@ -1023,20 +1031,17 @@
                 </div>
             `;
             
-            // Remplacer le contenu du container
-            const container = document.querySelector('.container');
-            const title = container.querySelector('h1');
-            const subtitle = container.querySelector('.subtitle');
-            
-            // Garder seulement le titre et ajouter la confirmation
-            container.innerHTML = '';
-            container.appendChild(title);
-            subtitle.textContent = '';
-            container.appendChild(subtitle);
+            // Ajouter le message de confirmation
             container.insertAdjacentHTML('beforeend', confirmationHTML);
             
             // Scroll vers le haut
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Effacer l'alerte qui pourrait encore être visible
+            const alertContainer = document.getElementById('alertContainer');
+            if (alertContainer) {
+                alertContainer.innerHTML = '';
+            }
             
         } else {
             showAlert(result.message || 'Erreur lors de la réservation. Veuillez réessayer.', 'error');
@@ -1047,7 +1052,7 @@
         loading.style.display = 'none';
         submitBtn.disabled = false;
     }
-}    
+}
     function showAlert(message, type) {
         const container = document.getElementById('alertContainer');
         const alert = document.createElement('div');
