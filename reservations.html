@@ -539,6 +539,36 @@
                 </div>
                 
                 <div class="form-group">
+                    <label>Adresse *</label>
+                    <input type="text" id="adresse" placeholder="Numéro et rue" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Ville *</label>
+                    <input type="text" id="ville" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Code postal *</label>
+                    <input type="text" id="code_postal" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Pays *</label>
+                    <select id="pays" required>
+                        <option value="">Sélectionner...</option>
+                        <option value="France" selected>France</option>
+                        <option value="Allemagne">Allemagne</option>
+                        <option value="Belgique">Belgique</option>
+                        <option value="Luxembourg">Luxembourg</option>
+                        <option value="Pays-Bas">Pays-Bas</option>
+                        <option value="Pologne">Pologne</option>
+                        <option value="Royaume-Uni">Royaume-Uni</option>
+                        <option value="Suisse">Suisse</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
                     <label>Message / Demandes spéciales</label>
                     <textarea id="message" placeholder="Heure d'arrivée, demandes particulières..."></textarea>
                 </div>
@@ -778,6 +808,10 @@
                 prenom: document.getElementById('prenom').value,
                 email: document.getElementById('email').value,
                 telephone: document.getElementById('telephone').value,
+                adresse: document.getElementById('adresse').value,
+                ville: document.getElementById('ville').value,
+                code_postal: document.getElementById('code_postal').value,
+                pays: document.getElementById('pays').value,
                 message: document.getElementById('message').value
             };
             
