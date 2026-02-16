@@ -350,13 +350,9 @@
         #bottomAlertContainer {
             margin-top: 30px;
             margin-bottom: 20px;
-            position: sticky;
-            bottom: 0;
-            background: transparent;
-            z-index: 999;
         }
 
-        /* Sur mobile, rendre le message du bas encore plus visible */
+        /* Sur mobile, le message du bas est fixe */
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.8em;
@@ -378,8 +374,8 @@
                 right: 0;
                 padding: 10px;
                 margin: 0;
-                background: rgba(255,255,255,0.95);
-                box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+                background: transparent;
+                z-index: 1000;
                 animation: slideUp 0.3s ease-out;
             }
             
@@ -395,6 +391,15 @@
             #bottomAlertContainer .alert {
                 margin-bottom: 0;
                 border-radius: 10px;
+            }
+        }
+
+        /* Sur desktop, le bas n'est pas fixe */
+        @media (min-width: 769px) {
+            #bottomAlertContainer {
+                position: static;
+                background: transparent;
+                box-shadow: none;
             }
         }
     </style>
@@ -991,14 +996,14 @@
             const checkResult = await checkResponse.json();
             
             if (!checkResult.available) {
-                await showAlert('❌ Dates non disponibles. Veuillez choisir d\'autres dates.', 'error', false);
+                await showAlert('❌ Dates non disponibles. Veuillez choisir d\'autres dates ou nous appeler au 04 75 00 00 00 pour plus de disponibilités.', 'error', false);
                 return;
             }
             
             await showAlert('✅ Dates disponibles !', 'success', false);
             
         } catch (error) {
-            await showAlert('⚠️ Impossible de vérifier la disponibilité. Veuillez réessayer.', 'error', false);
+            await showAlert('⚠️ Impossible de vérifier la disponibilité. Veuillez réessayer ou nous appeler.', 'error', false);
             return;
         }
         
@@ -1155,7 +1160,7 @@
                     }
                 }, 100);
                 
-                // Afficher un message de succès permanent (en haut ET en bas)
+                // Afficher un message de succès permanent
                 await showAlert('✅ Réservation confirmée ! Un email vous a été envoyé.', 'success', false);
                 
             } else {
@@ -1171,6 +1176,8 @@
     
     function showAlert(message, type, autoHide = false) {
         return new Promise((resolve) => {
+            const isMobile = window.innerWidth < 768;
+            
             // Vérifier si le conteneur du haut existe, sinon le créer
             let topAlertContainer = document.getElementById('alertContainer');
             if (!topAlertContainer) {
@@ -1194,7 +1201,7 @@
                 }
             }
             
-            // EFFACER TOUS LES ANCIENS MESSAGES (haut et bas)
+            // EFFACER TOUS LES ANCIENS MESSAGES
             topAlertContainer.innerHTML = '';
             bottomAlertContainer.innerHTML = '';
             
@@ -1209,7 +1216,7 @@
                 alert.style.position = 'relative';
                 alert.style.zIndex = '1000';
                 alert.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
-                alert.style.fontSize = window.innerWidth < 768 ? '14px' : '16px';
+                alert.style.fontSize = isMobile ? '14px' : '16px';
                 alert.style.fontWeight = 'bold';
                 
                 // Créer le contenu du message
@@ -1217,7 +1224,7 @@
                 messageSpan.textContent = message;
                 alert.appendChild(messageSpan);
                 
-                // Ajouter un bouton de fermeture si on veut pouvoir le fermer manuellement
+                // Ajouter un bouton de fermeture
                 if (!autoHide) {
                     const closeBtn = document.createElement('span');
                     closeBtn.innerHTML = '&times;';
@@ -1231,37 +1238,55 @@
                 return alert;
             };
             
-            // Créer et ajouter l'alerte en haut
-            const topAlert = createAlertElement();
-            topAlertContainer.appendChild(topAlert);
-            
-            // Créer et ajouter l'alerte en bas
-            const bottomAlert = createAlertElement();
-            bottomAlertContainer.appendChild(bottomAlert);
-            
-            // SCROLL VERS LE HAUT (pour voir le message du haut)
-            setTimeout(() => {
-                topAlertContainer.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
-                });
+            if (isMobile) {
+                // Sur mobile : UN SEUL message en bas
+                const bottomAlert = createAlertElement();
+                bottomAlertContainer.appendChild(bottomAlert);
                 
-                // Backup scroll
+                // Scroll doux vers le bas pour voir le message
                 setTimeout(() => {
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
+                    bottomAlertContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'end' 
                     });
+                    resolve();
                 }, 50);
+            } else {
+                // Sur desktop : DEUX messages (haut et bas)
+                const topAlert = createAlertElement();
+                topAlertContainer.appendChild(topAlert);
                 
-                resolve();
-            }, 50);
+                const bottomAlert = createAlertElement();
+                bottomAlertContainer.appendChild(bottomAlert);
+                
+                // Scroll vers le haut pour voir le message du haut
+                setTimeout(() => {
+                    topAlertContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                    
+                    // Backup scroll
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    }, 50);
+                    
+                    resolve();
+                }, 50);
+            }
             
-            // Auto-hide uniquement si demandé (cache les deux messages)
+            // Auto-hide si demandé
             if (autoHide) {
                 setTimeout(() => {
-                    topAlert.style.display = 'none';
-                    bottomAlert.style.display = 'none';
+                    if (isMobile) {
+                        bottomAlertContainer.innerHTML = '';
+                    } else {
+                        topAlertContainer.innerHTML = '';
+                        bottomAlertContainer.innerHTML = '';
+                    }
                 }, 5000);
             }
         });
