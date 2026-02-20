@@ -450,7 +450,7 @@
                     <strong>Options supplémentaires / Additional options:</strong>
                     <div class="checkbox-group">
                         <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
-                        <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (9€/p)</label>
+                        <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (10€/p)</label>
                     </div>
                     <div class="checkbox-group">
                         <input type="checkbox" class="opt-animal" value="10">
@@ -506,7 +506,7 @@
                     <strong>Options supplémentaires / Additional options:</strong>
                     <div class="checkbox-group">
                         <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
-                        <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (9€/p)</label>
+                        <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (10€/p)</label>
                     </div>
                     <div class="checkbox-group">
                         <input type="checkbox" class="opt-animal" value="10">
@@ -562,7 +562,7 @@
                     <strong>Options supplémentaires / Additional options:</strong>
                     <div class="checkbox-group">
                         <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
-                        <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (9€/p)</label>
+                        <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (10€/p)</label>
                     </div>
                     <div class="checkbox-group">
                         <input type="checkbox" class="opt-animal" value="10">
@@ -619,7 +619,7 @@
                     <strong>Options supplémentaires / Additional options:</strong>
                     <div class="checkbox-group">
                         <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
-                        <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (9€/p)</label>
+                        <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (10€/p)</label>
                     </div>
                     <div class="checkbox-group">
                         <input type="checkbox" class="opt-animal" value="10">
@@ -940,7 +940,7 @@
         // Options
         const petitdej = parseInt(card.querySelector('.opt-petitdej')?.value || 0);
         if (petitdej > 0) {
-            const prixPetitDej = petitdej * 9;
+            const prixPetitDej = petitdej * 10;
             prixTotal += prixPetitDej;
             details.push(`${petitdej} petit déj.: ${prixPetitDej}€`);
         }
