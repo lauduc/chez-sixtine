@@ -298,6 +298,9 @@
     // 🔐 Configuration
     const WEBHOOK_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chatbot-booking';
     const API_KEY = 'X8ZR4CQrrRi6lcrV0tsbB2DpTOUFeJVgbG3E-rJr5HQ';
+    
+    // Historique de conversation
+    let conversationHistory = [];
 
     function addMessage(text, isBot = false) {
       const messagesContainer = document.getElementById('chatbot-messages');
@@ -306,6 +309,17 @@
       div.innerHTML = `<div class="message-content">${escapeHtml(text)}</div>`;
       messagesContainer.appendChild(div);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      
+      // Ajouter à l'historique
+      conversationHistory.push({
+        role: isBot ? 'assistant' : 'user',
+        content: text
+      });
+      
+      // Garder seulement les 10 derniers messages
+      if (conversationHistory.length > 10) {
+        conversationHistory = conversationHistory.slice(-10);
+      }
     }
 
     function addErrorMessage(text) {
@@ -384,6 +398,7 @@
           },
           body: JSON.stringify({ 
             message, 
+            history: conversationHistory.slice(-6), // Envoyer les 6 derniers messages
             source: 'website-chatbot', 
             timestamp: new Date().toISOString() 
           })
