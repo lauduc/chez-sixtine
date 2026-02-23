@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Réservation - Chez Sixtine</title>
     <style>
+        /* Gardez tout votre CSS existant ici, inchangé */
         * {
             margin: 0;
             padding: 0;
@@ -438,7 +439,7 @@ h1 a:hover {
 </head>
 <body>
     <div class="container">
-        <h1><a href=https://www.chez-sixtine.com/r%C3%A9server>🏡 Réservation Chez Sixtine</a></h1>
+        <h1><a href="https://www.chez-sixtine.com/r%C3%A9server">🏡 Réservation Chez Sixtine</a></h1>
         <p class="subtitle">Sélectionnez vos dates et le nombre de personnes pour calculer le prix</p>
         
         <div id="alertContainer"></div>
@@ -885,6 +886,65 @@ h1 a:hover {
         const reservationForm = document.getElementById('reservationForm');
         if (reservationForm) {
             reservationForm.addEventListener('submit', submitReservation);
+        }
+
+        // ===== NOUVEAU : Récupérer les paramètres de l'URL =====
+        const urlParams = new URLSearchParams(window.location.search);
+        const checkinParam = urlParams.get('checkin');
+        const checkoutParam = urlParams.get('checkout');
+        const logementParam = urlParams.get('logement') || 'tour'; // 'tour' par défaut si non spécifié
+
+        // Si les paramètres checkin et checkout sont présents
+        if (checkinParam && checkoutParam) {
+            console.log('Paramètres URL détectés:', { checkinParam, checkoutParam, logementParam });
+            
+            // Attendre que tout soit initialisé
+            setTimeout(() => {
+                // Activer l'onglet correspondant au logement
+                const tabToActivate = document.querySelector(`.tab[data-logement="${logementParam}"]`);
+                if (tabToActivate) {
+                    tabToActivate.click(); // Cela déclenchera l'affichage de la bonne carte
+                }
+
+                // Récupérer la carte active (celle qui correspond au logement)
+                const activeCard = document.querySelector(`.logement-card[data-logement="${logementParam}"]`);
+                if (activeCard) {
+                    const arriveeInput = activeCard.querySelector('.date-arrivee');
+                    const departInput = activeCard.querySelector('.date-depart');
+
+                    // Vérifier que les dates sont valides
+                    const today2 = new Date();
+                    today2.setHours(0, 0, 0, 0);
+                    const checkinDate = new Date(checkinParam);
+                    const checkoutDate = new Date(checkoutParam);
+
+                    if (checkinDate >= today2 && checkoutDate > checkinDate) {
+                        // Remplir les champs de date
+                        if (arriveeInput) arriveeInput.value = checkinParam;
+                        if (departInput) departInput.value = checkoutParam;
+
+                        // Déclencher les événements pour recalculer le prix
+                        if (arriveeInput) {
+                            const event = new Event('change', { bubbles: true });
+                            arriveeInput.dispatchEvent(event);
+                        }
+
+                        // Petit délai pour laisser le temps au calcul
+                        setTimeout(() => {
+                            // Vérifier si le bouton Réserver est activé (les dates sont valides)
+                            const btnReserver = activeCard.querySelector('.btn-reserver');
+                            if (btnReserver && !btnReserver.disabled) {
+                                console.log('Ouverture automatique du formulaire de réservation...');
+                                btnReserver.click(); // Ouvrir automatiquement le formulaire
+                            } else {
+                                console.log('Bouton Réserver désactivé, vérification des dates...');
+                            }
+                        }, 800);
+                    } else {
+                        showAlert('Les dates fournies sont invalides (passées ou incorrectes).', 'error', false);
+                    }
+                }
+            }, 600); // Délai pour laisser l'initialisation se faire
         }
     });
     
