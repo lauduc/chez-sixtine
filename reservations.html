@@ -908,7 +908,7 @@ h1 a:hover {
             reservationForm.addEventListener('submit', submitReservation);
         }
 
-        // ===== TRAITER LES PARAMÈTRES URL =====
+        // ===== TRAITER LES PARAMÈTRES URL (sans ouvrir automatiquement le formulaire) =====
         if (checkinParam && checkoutParam && logementParam) {
             console.log('Paramètres URL détectés:', { checkinParam, checkoutParam, logementParam });
             
@@ -935,17 +935,10 @@ h1 a:hover {
                         const event = new Event('change', { bubbles: true });
                         arriveeInput.dispatchEvent(event);
                     }
-
-                    // Petit délai pour laisser le temps au calcul
-                    setTimeout(() => {
-                        const btnReserver = activeCard.querySelector('.btn-reserver');
-                        if (btnReserver && !btnReserver.disabled) {
-                            console.log('Ouverture automatique du formulaire de réservation...');
-                            btnReserver.click();
-                        } else {
-                            console.log('Bouton Réserver désactivé, vérification des dates...');
-                        }
-                    }, 800);
+                    
+                    // Afficher un message de confirmation (auto-hide après 5 secondes)
+                    showAlert(`✅ Dates pré-remplies pour ${logementParam}. Vous pouvez maintenant ajuster les options et cliquer sur "Réserver".`, 'success', true);
+                    
                 } else {
                     showAlert('Les dates fournies sont invalides (passées ou incorrectes).', 'error', false);
                 }
