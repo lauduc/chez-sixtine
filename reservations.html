@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Réservation - Chez Sixtine</title>
     <style>
-        /* Gardez tout votre CSS existant ici, inchangé */
         * {
             margin: 0;
             padding: 0;
@@ -798,7 +797,32 @@ h1 a:hover {
             input.min = today;
         });
 
-        // === GESTION DES ONGLETS ===
+        // ===== D'ABORD, vérifier les paramètres URL =====
+        const urlParams = new URLSearchParams(window.location.search);
+        const checkinParam = urlParams.get('checkin');
+        const checkoutParam = urlParams.get('checkout');
+        const logementParam = urlParams.get('logement') || null;
+
+        // Si un logement est spécifié dans l'URL, on désactive l'onglet "tour" par défaut
+        if (logementParam) {
+            // Retirer la classe active de l'onglet tour par défaut
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.logement-card').forEach(c => c.classList.remove('active'));
+            
+            // Activer le bon onglet
+            const tabToActivate = document.querySelector(`.tab[data-logement="${logementParam}"]`);
+            if (tabToActivate) {
+                tabToActivate.classList.add('active');
+            }
+            
+            // Afficher la bonne carte
+            const cardToShow = document.querySelector(`.logement-card[data-logement="${logementParam}"]`);
+            if (cardToShow) {
+                cardToShow.classList.add('active');
+            }
+        }
+
+        // === GESTION DES ONGLETS (pour les clics manuels) ===
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 // Retirer la classe active de tous les onglets
@@ -833,7 +857,6 @@ h1 a:hover {
             // Initialiser le nombre de personnes à 2
             const nbPersonnesSelect = card.querySelector('.nb-personnes');
             if (nbPersonnesSelect) {
-                // Sélectionner l'option avec la valeur "2"
                 for (let i = 0; i < nbPersonnesSelect.options.length; i++) {
                     if (nbPersonnesSelect.options[i].value === '2') {
                         nbPersonnesSelect.selectedIndex = i;
@@ -853,14 +876,11 @@ h1 a:hover {
                         const dateDepart = new Date(dateArrivee);
                         dateDepart.setDate(dateDepart.getDate() + 1);
                         
-                        // Formater la date au format YYYY-MM-DD
                         const year = dateDepart.getFullYear();
                         const month = String(dateDepart.getMonth() + 1).padStart(2, '0');
                         const day = String(dateDepart.getDate()).padStart(2, '0');
                         
                         dateDepartInput.value = `${year}-${month}-${day}`;
-                        
-                        // Recalculer le prix
                         calculatePrice(card, logement);
                     }
                 });
@@ -888,63 +908,48 @@ h1 a:hover {
             reservationForm.addEventListener('submit', submitReservation);
         }
 
-        // ===== NOUVEAU : Récupérer les paramètres de l'URL =====
-        const urlParams = new URLSearchParams(window.location.search);
-        const checkinParam = urlParams.get('checkin');
-        const checkoutParam = urlParams.get('checkout');
-        const logementParam = urlParams.get('logement') || 'tour'; // 'tour' par défaut si non spécifié
-
-        // Si les paramètres checkin et checkout sont présents
-        if (checkinParam && checkoutParam) {
+        // ===== TRAITER LES PARAMÈTRES URL =====
+        if (checkinParam && checkoutParam && logementParam) {
             console.log('Paramètres URL détectés:', { checkinParam, checkoutParam, logementParam });
             
-            // Attendre que tout soit initialisé
-            setTimeout(() => {
-                // Activer l'onglet correspondant au logement
-                const tabToActivate = document.querySelector(`.tab[data-logement="${logementParam}"]`);
-                if (tabToActivate) {
-                    tabToActivate.click(); // Cela déclenchera l'affichage de la bonne carte
-                }
+            // La carte est déjà activée par le code au début
+            const activeCard = document.querySelector(`.logement-card[data-logement="${logementParam}"]`);
+            
+            if (activeCard) {
+                const arriveeInput = activeCard.querySelector('.date-arrivee');
+                const departInput = activeCard.querySelector('.date-depart');
 
-                // Récupérer la carte active (celle qui correspond au logement)
-                const activeCard = document.querySelector(`.logement-card[data-logement="${logementParam}"]`);
-                if (activeCard) {
-                    const arriveeInput = activeCard.querySelector('.date-arrivee');
-                    const departInput = activeCard.querySelector('.date-depart');
+                // Vérifier que les dates sont valides
+                const today2 = new Date();
+                today2.setHours(0, 0, 0, 0);
+                const checkinDate = new Date(checkinParam);
+                const checkoutDate = new Date(checkoutParam);
 
-                    // Vérifier que les dates sont valides
-                    const today2 = new Date();
-                    today2.setHours(0, 0, 0, 0);
-                    const checkinDate = new Date(checkinParam);
-                    const checkoutDate = new Date(checkoutParam);
+                if (checkinDate >= today2 && checkoutDate > checkinDate) {
+                    // Remplir les champs de date
+                    if (arriveeInput) arriveeInput.value = checkinParam;
+                    if (departInput) departInput.value = checkoutParam;
 
-                    if (checkinDate >= today2 && checkoutDate > checkinDate) {
-                        // Remplir les champs de date
-                        if (arriveeInput) arriveeInput.value = checkinParam;
-                        if (departInput) departInput.value = checkoutParam;
-
-                        // Déclencher les événements pour recalculer le prix
-                        if (arriveeInput) {
-                            const event = new Event('change', { bubbles: true });
-                            arriveeInput.dispatchEvent(event);
-                        }
-
-                        // Petit délai pour laisser le temps au calcul
-                        setTimeout(() => {
-                            // Vérifier si le bouton Réserver est activé (les dates sont valides)
-                            const btnReserver = activeCard.querySelector('.btn-reserver');
-                            if (btnReserver && !btnReserver.disabled) {
-                                console.log('Ouverture automatique du formulaire de réservation...');
-                                btnReserver.click(); // Ouvrir automatiquement le formulaire
-                            } else {
-                                console.log('Bouton Réserver désactivé, vérification des dates...');
-                            }
-                        }, 800);
-                    } else {
-                        showAlert('Les dates fournies sont invalides (passées ou incorrectes).', 'error', false);
+                    // Déclencher les événements pour recalculer le prix
+                    if (arriveeInput) {
+                        const event = new Event('change', { bubbles: true });
+                        arriveeInput.dispatchEvent(event);
                     }
+
+                    // Petit délai pour laisser le temps au calcul
+                    setTimeout(() => {
+                        const btnReserver = activeCard.querySelector('.btn-reserver');
+                        if (btnReserver && !btnReserver.disabled) {
+                            console.log('Ouverture automatique du formulaire de réservation...');
+                            btnReserver.click();
+                        } else {
+                            console.log('Bouton Réserver désactivé, vérification des dates...');
+                        }
+                    }, 800);
+                } else {
+                    showAlert('Les dates fournies sont invalides (passées ou incorrectes).', 'error', false);
                 }
-            }, 600); // Délai pour laisser l'initialisation se faire
+            }
         }
     });
     
