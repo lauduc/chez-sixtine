@@ -1062,8 +1062,11 @@
                         petitdejNb.value = petitdejParam;
                     }
 
-                    if (animalParam === '1' && animalCheck) {
+                   // Accepter '1', 'true', 'oui' ou 'yes' comme valeur valide pour activer l'option animal
+                    if (animalParam && (animalParam === '1' || animalParam.toLowerCase() === 'true' || animalParam.toLowerCase() === 'oui' || animalParam.toLowerCase() === 'yes')) {
+                     if (animalCheck) {
                         animalCheck.checked = true;
+                        }
                     }
 
                     if (repasParam && repasCheck && repasNb) {
@@ -1071,8 +1074,10 @@
                         repasNb.value = repasParam;
                     }
 
-                    if (bebeParam === '1' && bebeCheck) {
+                    if (bebeParam && (bebeParam === '1' || bebeParam.toLowerCase() === 'true' || bebeParam.toLowerCase() === 'oui' || bebeParam.toLowerCase() === 'yes')) {
+                    if (bebeCheck) {
                         bebeCheck.checked = true;
+                    }
                     }
 
                     // Déclencher les événements pour recalculer le prix
