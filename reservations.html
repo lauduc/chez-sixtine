@@ -32,14 +32,14 @@
         }
 
         h1 a {
-    color: white;
-    text-decoration: none;
-    transition: opacity 0.3s;
-}
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
 
-h1 a:hover {
-    opacity: 0.8;
-}
+        h1 a:hover {
+            opacity: 0.8;
+        }
         
         .subtitle {
             text-align: center;
@@ -151,26 +151,26 @@ h1 a:hover {
         }
 
         .btn-home {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 15px 40px;
-    background: white;
-    color: #667eea;
-    text-decoration: none;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 1.1em;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    text-align: center;
-    width: 100%;
-    box-sizing: border-box;
-}
+            display: inline-block;
+            margin-top: 15px;
+            padding: 15px 40px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-.btn-home:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-}
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
         
         .options-extras {
             background: #fff9e6;
@@ -181,10 +181,21 @@ h1 a:hover {
         
         .checkbox-group {
             margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .checkbox-group input[type="checkbox"] {
-            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            margin-right: 5px;
+        }
+        
+        .checkbox-group input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            margin-left: 5px;
         }
         
         input[type="text"],
@@ -480,21 +491,27 @@ h1 a:hover {
                 
                 <div class="options-extras">
                     <strong>Options supplémentaires / Additional options:</strong>
+                    
                     <div class="checkbox-group">
-                        <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
-                        <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (10€/p)</label>
+                        <input type="checkbox" class="opt-petitdej-check" id="tour-petitdej">
+                        <label for="tour-petitdej">Petit déjeuner / Breakfast (10€/pers)</label>
+                        <input type="number" class="opt-petitdej-nb" min="0" max="10" value="0" placeholder="Nb" style="width: 70px;">
                     </div>
+                    
                     <div class="checkbox-group">
-                        <input type="checkbox" class="opt-animal" value="10">
-                        <label style="display: inline;">Forfait Animal / Pet fee (10€)</label>
+                        <input type="checkbox" class="opt-animal" id="tour-animal" value="10">
+                        <label for="tour-animal">Forfait Animal / Pet fee (10€)</label>
                     </div>
+                    
                     <div class="checkbox-group">
-                        <input type="number" class="opt-repas" min="0" max="10" placeholder="Nb repas d'hôtes" style="width: auto; display: inline-block; margin-left: 0;">
-                        <label style="display: inline; margin-left: 5px;">Repas d'hôtes / Host meal (25€/pers)</label>
+                        <input type="checkbox" class="opt-repas-check" id="tour-repas">
+                        <label for="tour-repas">Repas d'hôtes / Host meal (27€/pers)</label>
+                        <input type="number" class="opt-repas-nb" min="0" max="10" value="0" placeholder="Nb" style="width: 70px;">
                     </div>
+                    
                     <div class="checkbox-group">
-                        <input type="checkbox" class="opt-bebe" value="20">
-                        <label style="display: inline;">Lit bébé / Baby crib (20€)</label>
+                        <input type="checkbox" class="opt-bebe" id="tour-bebe" value="20">
+                        <label for="tour-bebe">Lit bébé / Baby crib (20€)</label>
                     </div>
                 </div>
                 
@@ -537,21 +554,27 @@ h1 a:hover {
                 
                 <div class="options-extras">
                     <strong>Options supplémentaires / Additional options:</strong>
+                    
                     <div class="checkbox-group">
-                        <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
-                        <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (10€/p)</label>
+                        <input type="checkbox" class="opt-petitdej-check" id="drome-petitdej">
+                        <label for="drome-petitdej">Petit déjeuner / Breakfast (10€/pers)</label>
+                        <input type="number" class="opt-petitdej-nb" min="0" max="10" value="0" placeholder="Nb" style="width: 70px;">
                     </div>
+                    
                     <div class="checkbox-group">
-                        <input type="checkbox" class="opt-animal" value="10">
-                        <label style="display: inline;">Forfait Animal / Pet fee (10€)</label>
+                        <input type="checkbox" class="opt-animal" id="drome-animal" value="10">
+                        <label for="drome-animal">Forfait Animal / Pet fee (10€)</label>
                     </div>
+                    
                     <div class="checkbox-group">
-                        <input type="number" class="opt-repas" min="0" max="10" placeholder="Nb repas d'hôtes" style="width: auto; display: inline-block;">
-                        <label style="display: inline; margin-left: 5px;">Repas d'hôtes / Host meal (25€/pers)</label>
+                        <input type="checkbox" class="opt-repas-check" id="drome-repas">
+                        <label for="drome-repas">Repas d'hôtes / Host meal (27€/pers)</label>
+                        <input type="number" class="opt-repas-nb" min="0" max="10" value="0" placeholder="Nb" style="width: 70px;">
                     </div>
+                    
                     <div class="checkbox-group">
-                        <input type="checkbox" class="opt-bebe" value="20">
-                        <label style="display: inline;">Lit bébé / Baby crib (20€)</label>
+                        <input type="checkbox" class="opt-bebe" id="drome-bebe" value="20">
+                        <label for="drome-bebe">Lit bébé / Baby crib (20€)</label>
                     </div>
                 </div>
                 
@@ -594,21 +617,27 @@ h1 a:hover {
                 
                 <div class="options-extras">
                     <strong>Options supplémentaires / Additional options:</strong>
+                    
                     <div class="checkbox-group">
-                        <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
-                        <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (10€/p)</label>
+                        <input type="checkbox" class="opt-petitdej-check" id="duchesse-petitdej">
+                        <label for="duchesse-petitdej">Petit déjeuner / Breakfast (10€/pers)</label>
+                        <input type="number" class="opt-petitdej-nb" min="0" max="10" value="0" placeholder="Nb" style="width: 70px;">
                     </div>
+                    
                     <div class="checkbox-group">
-                        <input type="checkbox" class="opt-animal" value="10">
-                        <label style="display: inline;">Forfait Animal / Pet fee (10€)</label>
+                        <input type="checkbox" class="opt-animal" id="duchesse-animal" value="10">
+                        <label for="duchesse-animal">Forfait Animal / Pet fee (10€)</label>
                     </div>
+                    
                     <div class="checkbox-group">
-                        <input type="number" class="opt-repas" min="0" max="10" placeholder="Nb repas d'hôtes" style="width: auto; display: inline-block;">
-                        <label style="display: inline; margin-left: 5px;">Repas d'hôtes / Host meal (25€/pers)</label>
+                        <input type="checkbox" class="opt-repas-check" id="duchesse-repas">
+                        <label for="duchesse-repas">Repas d'hôtes / Host meal (27€/pers)</label>
+                        <input type="number" class="opt-repas-nb" min="0" max="10" value="0" placeholder="Nb" style="width: 70px;">
                     </div>
+                    
                     <div class="checkbox-group">
-                        <input type="checkbox" class="opt-bebe" value="20">
-                        <label style="display: inline;">Lit bébé / Baby crib (20€)</label>
+                        <input type="checkbox" class="opt-bebe" id="duchesse-bebe" value="20">
+                        <label for="duchesse-bebe">Lit bébé / Baby crib (20€)</label>
                     </div>
                 </div>
                 
@@ -652,21 +681,27 @@ h1 a:hover {
                 
                 <div class="options-extras">
                     <strong>Options supplémentaires / Additional options:</strong>
+                    
                     <div class="checkbox-group">
-                        <input type="number" class="opt-petitdej" min="0" max="50" placeholder="0" style="width: 60px; display: inline-block;">
-                        <label style="display: inline; margin-left: 5px;">Petit déjeuner / Breakfast (10€/p)</label>
+                        <input type="checkbox" class="opt-petitdej-check" id="studio-petitdej">
+                        <label for="studio-petitdej">Petit déjeuner / Breakfast (10€/pers)</label>
+                        <input type="number" class="opt-petitdej-nb" min="0" max="10" value="0" placeholder="Nb" style="width: 70px;">
                     </div>
+                    
                     <div class="checkbox-group">
-                        <input type="checkbox" class="opt-animal" value="10">
-                        <label style="display: inline;">Forfait Animal / Pet fee (10€)</label>
+                        <input type="checkbox" class="opt-animal" id="studio-animal" value="10">
+                        <label for="studio-animal">Forfait Animal / Pet fee (10€)</label>
                     </div>
+                    
                     <div class="checkbox-group">
-                        <input type="number" class="opt-repas" min="0" max="10" placeholder="Nb repas d'hôtes" style="width: auto; display: inline-block;">
-                        <label style="display: inline; margin-left: 5px;">Repas d'hôtes / Host meal (25€/pers)</label>
+                        <input type="checkbox" class="opt-repas-check" id="studio-repas">
+                        <label for="studio-repas">Repas d'hôtes / Host meal (27€/pers)</label>
+                        <input type="number" class="opt-repas-nb" min="0" max="10" value="0" placeholder="Nb" style="width: 70px;">
                     </div>
+                    
                     <div class="checkbox-group">
-                        <input type="checkbox" class="opt-bebe" value="20">
-                        <label style="display: inline;">Lit bébé / Baby crib (20€)</label>
+                        <input type="checkbox" class="opt-bebe" id="studio-bebe" value="20">
+                        <label for="studio-bebe">Lit bébé / Baby crib (20€)</label>
                     </div>
                 </div>
                 
@@ -802,6 +837,16 @@ h1 a:hover {
         const checkinParam = urlParams.get('checkin');
         const checkoutParam = urlParams.get('checkout');
         const logementParam = urlParams.get('logement') || null;
+        const personnesParam = urlParams.get('personnes');
+        const nomParam = urlParams.get('nom');
+        const prenomParam = urlParams.get('prenom');
+        const emailParam = urlParams.get('email');
+        const telParam = urlParams.get('tel');
+        const petitdejParam = urlParams.get('petitdej');
+        const animalParam = urlParams.get('animal');
+        const repasParam = urlParams.get('repas');
+        const bebeParam = urlParams.get('bebe');
+        const messageParam = urlParams.get('message');
 
         // Si un logement est spécifié dans l'URL, on désactive l'onglet "tour" par défaut
         if (logementParam) {
@@ -854,11 +899,23 @@ h1 a:hover {
         document.querySelectorAll('.logement-card').forEach(card => {
             const logement = card.dataset.logement;
             
-            // Initialiser le nombre de personnes à 2
+            // Initialiser le nombre de personnes
             const nbPersonnesSelect = card.querySelector('.nb-personnes');
-            if (nbPersonnesSelect) {
+            if (nbPersonnesSelect && personnesParam) {
+                // Chercher l'option qui correspond au nombre de personnes
                 for (let i = 0; i < nbPersonnesSelect.options.length; i++) {
-                    if (nbPersonnesSelect.options[i].value === '2') {
+                    const optionValue = nbPersonnesSelect.options[i].value;
+                    if (optionValue === personnesParam || 
+                        optionValue.startsWith(personnesParam) || 
+                        optionValue.includes(personnesParam)) {
+                        nbPersonnesSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            } else if (nbPersonnesSelect) {
+                // Par défaut, sélectionner la première option non vide
+                for (let i = 0; i < nbPersonnesSelect.options.length; i++) {
+                    if (nbPersonnesSelect.options[i].value !== '') {
                         nbPersonnesSelect.selectedIndex = i;
                         break;
                     }
@@ -887,10 +944,48 @@ h1 a:hover {
             }
             
             // Calculer prix à chaque changement
-            card.querySelectorAll('.date-arrivee, .date-depart, .nb-personnes, .opt-petitdej, .opt-animal, .opt-repas, .opt-bebe').forEach(el => {
+            card.querySelectorAll('.date-arrivee, .date-depart, .nb-personnes').forEach(el => {
                 el.addEventListener('change', () => calculatePrice(card, logement));
                 el.addEventListener('input', () => calculatePrice(card, logement));
             });
+            
+            // Gestion des options avec cases à cocher et nombres
+            const petitdejCheck = card.querySelector('.opt-petitdej-check');
+            const petitdejNb = card.querySelector('.opt-petitdej-nb');
+            const animalCheck = card.querySelector('.opt-animal');
+            const repasCheck = card.querySelector('.opt-repas-check');
+            const repasNb = card.querySelector('.opt-repas-nb');
+            const bebeCheck = card.querySelector('.opt-bebe');
+            
+            if (petitdejCheck && petitdejNb) {
+                petitdejCheck.addEventListener('change', function() {
+                    if (!this.checked) petitdejNb.value = 0;
+                    calculatePrice(card, logement);
+                });
+                petitdejNb.addEventListener('input', function() {
+                    if (parseInt(this.value) > 0) petitdejCheck.checked = true;
+                    calculatePrice(card, logement);
+                });
+            }
+            
+            if (repasCheck && repasNb) {
+                repasCheck.addEventListener('change', function() {
+                    if (!this.checked) repasNb.value = 0;
+                    calculatePrice(card, logement);
+                });
+                repasNb.addEventListener('input', function() {
+                    if (parseInt(this.value) > 0) repasCheck.checked = true;
+                    calculatePrice(card, logement);
+                });
+            }
+            
+            if (animalCheck) {
+                animalCheck.addEventListener('change', () => calculatePrice(card, logement));
+            }
+            
+            if (bebeCheck) {
+                bebeCheck.addEventListener('change', () => calculatePrice(card, logement));
+            }
             
             // Initialiser le prix (avec un délai pour être sûr que le DOM est prêt)
             setTimeout(() => calculatePrice(card, logement), 200);
@@ -908,9 +1003,19 @@ h1 a:hover {
             reservationForm.addEventListener('submit', submitReservation);
         }
 
-        // ===== TRAITER LES PARAMÈTRES URL (sans ouvrir automatiquement le formulaire) =====
+        // ===== PRÉ-REMPLIR LES INFORMATIONS CLIENT =====
+        if (nomParam) document.getElementById('nom').value = decodeURIComponent(nomParam);
+        if (prenomParam) document.getElementById('prenom').value = decodeURIComponent(prenomParam);
+        if (emailParam) document.getElementById('email').value = decodeURIComponent(emailParam);
+        if (telParam) document.getElementById('telephone').value = decodeURIComponent(telParam);
+        if (messageParam) document.getElementById('message').value = decodeURIComponent(messageParam);
+
+        // ===== TRAITER LES PARAMÈTRES URL =====
         if (checkinParam && checkoutParam && logementParam) {
-            console.log('Paramètres URL détectés:', { checkinParam, checkoutParam, logementParam });
+            console.log('Paramètres URL détectés:', { 
+                checkinParam, checkoutParam, logementParam, personnesParam,
+                petitdejParam, animalParam, repasParam, bebeParam
+            });
             
             // La carte est déjà activée par le code au début
             const activeCard = document.querySelector(`.logement-card[data-logement="${logementParam}"]`);
@@ -918,6 +1023,7 @@ h1 a:hover {
             if (activeCard) {
                 const arriveeInput = activeCard.querySelector('.date-arrivee');
                 const departInput = activeCard.querySelector('.date-depart');
+                const nbPersonnesSelect = activeCard.querySelector('.nb-personnes');
 
                 // Vérifier que les dates sont valides
                 const today2 = new Date();
@@ -930,14 +1036,53 @@ h1 a:hover {
                     if (arriveeInput) arriveeInput.value = checkinParam;
                     if (departInput) departInput.value = checkoutParam;
 
+                    // Remplir le nombre de personnes
+                    if (nbPersonnesSelect && personnesParam) {
+                        for (let i = 0; i < nbPersonnesSelect.options.length; i++) {
+                            const optionValue = nbPersonnesSelect.options[i].value;
+                            if (optionValue === personnesParam || 
+                                optionValue.startsWith(personnesParam) || 
+                                optionValue.includes(personnesParam)) {
+                                nbPersonnesSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Remplir les options
+                    const petitdejCheck = activeCard.querySelector('.opt-petitdej-check');
+                    const petitdejNb = activeCard.querySelector('.opt-petitdej-nb');
+                    const animalCheck = activeCard.querySelector('.opt-animal');
+                    const repasCheck = activeCard.querySelector('.opt-repas-check');
+                    const repasNb = activeCard.querySelector('.opt-repas-nb');
+                    const bebeCheck = activeCard.querySelector('.opt-bebe');
+
+                    if (petitdejParam && petitdejCheck && petitdejNb) {
+                        petitdejCheck.checked = true;
+                        petitdejNb.value = petitdejParam;
+                    }
+
+                    if (animalParam === '1' && animalCheck) {
+                        animalCheck.checked = true;
+                    }
+
+                    if (repasParam && repasCheck && repasNb) {
+                        repasCheck.checked = true;
+                        repasNb.value = repasParam;
+                    }
+
+                    if (bebeParam === '1' && bebeCheck) {
+                        bebeCheck.checked = true;
+                    }
+
                     // Déclencher les événements pour recalculer le prix
                     if (arriveeInput) {
                         const event = new Event('change', { bubbles: true });
                         arriveeInput.dispatchEvent(event);
                     }
                     
-                    // Afficher un message de confirmation (auto-hide après 5 secondes)
-                    showAlert(`✅ Dates pré-remplies pour ${logementParam}. Vous pouvez maintenant ajuster les options et cliquer sur "Réserver".`, 'success', true);
+                    // Afficher un message de confirmation
+                    showAlert(`✅ Dates et options pré-remplies. Vous pouvez maintenant ajuster et cliquer sur "Réserver".`, 'success', true);
                     
                 } else {
                     showAlert('Les dates fournies sont invalides (passées ou incorrectes).', 'error', false);
@@ -952,12 +1097,12 @@ h1 a:hover {
         
         const arrivee = card.querySelector('.date-arrivee')?.value;
         const depart = card.querySelector('.date-depart')?.value;
-        const nbPersonnes = card.querySelector('.nb-personnes')?.value;
+        const nbPersonnesSelect = card.querySelector('.nb-personnes')?.value;
         const priceDisplay = card.querySelector('.price-amount');
         const breakdown = card.querySelector('.price-breakdown');
         const btnReserver = card.querySelector('.btn-reserver');
         
-        if (!arrivee || !depart || !nbPersonnes) {
+        if (!arrivee || !depart || !nbPersonnesSelect) {
             if (priceDisplay) priceDisplay.textContent = 'Sélectionnez vos dates';
             if (breakdown) breakdown.textContent = '';
             if (btnReserver) btnReserver.disabled = true;
@@ -976,12 +1121,20 @@ h1 a:hover {
         
         const nbNuits = Math.ceil((dateDepart - dateArrivee) / (1000 * 60 * 60 * 24));
         
+        // Extraire le nombre de personnes de la sélection
+        let nbPersonnes = 2; // Valeur par défaut
+        if (nbPersonnesSelect.includes('-')) {
+            nbPersonnes = parseInt(nbPersonnesSelect.split('-')[0]);
+        } else {
+            nbPersonnes = parseInt(nbPersonnesSelect);
+        }
+        
         // Calculer prix de base
         let prixTotal = 0;
         let details = [];
         
         // Prix nuitées
-        const grille = PRIX[logement]?.[nbPersonnes];
+        const grille = PRIX[logement]?.[nbPersonnesSelect];
         
         if (!grille) {
             if (priceDisplay) priceDisplay.textContent = 'Configuration invalide';
@@ -1026,34 +1179,37 @@ h1 a:hover {
         }
         
         // Taxe de séjour
-        const nbPersonnesNum = nbPersonnes.includes('-') ? parseInt(nbPersonnes.split('-')[0]) : parseInt(nbPersonnes);
-        const taxeSejour = TAXE_SEJOUR * nbPersonnesNum * nbNuits;
+        const taxeSejour = TAXE_SEJOUR * nbPersonnes * nbNuits;
         prixTotal += taxeSejour;
         details.push(`Taxe séjour: ${taxeSejour.toFixed(2)}€`);
         
         // Options
-        const petitdej = parseInt(card.querySelector('.opt-petitdej')?.value || 0);
-        if (petitdej > 0) {
-            const prixPetitDej = petitdej * 10;
+        const petitdejCheck = card.querySelector('.opt-petitdej-check');
+        const petitdejNb = card.querySelector('.opt-petitdej-nb');
+        if (petitdejCheck && petitdejCheck.checked) {
+            const nb = parseInt(petitdejNb?.value || nbPersonnes);
+            const prixPetitDej = nb * 10;
             prixTotal += prixPetitDej;
-            details.push(`${petitdej} petit déj.: ${prixPetitDej}€`);
+            details.push(`${nb} petit déj.: ${prixPetitDej}€`);
         }
         
-        const animal = card.querySelector('.opt-animal')?.checked || false;
-        if (animal) {
+        const animalCheck = card.querySelector('.opt-animal');
+        if (animalCheck && animalCheck.checked) {
             prixTotal += 10;
             details.push('Forfait animal: 10€');
         }
         
-        const repas = parseInt(card.querySelector('.opt-repas')?.value || 0);
-        if (repas > 0) {
-            const prixRepas = repas * 25;
+        const repasCheck = card.querySelector('.opt-repas-check');
+        const repasNb = card.querySelector('.opt-repas-nb');
+        if (repasCheck && repasCheck.checked) {
+            const nb = parseInt(repasNb?.value || nbPersonnes);
+            const prixRepas = nb * 27;
             prixTotal += prixRepas;
-            details.push(`${repas} repas d'hôtes: ${prixRepas}€`);
+            details.push(`${nb} repas: ${prixRepas}€`);
         }
         
-        const bebe = card.querySelector('.opt-bebe')?.checked || false;
-        if (bebe) {
+        const bebeCheck = card.querySelector('.opt-bebe');
+        if (bebeCheck && bebeCheck.checked) {
             prixTotal += 20;
             details.push('Lit bébé: 20€');
         }
@@ -1066,10 +1222,10 @@ h1 a:hover {
     async function openBookingForm(card, logement) {
         const arrivee = card.querySelector('.date-arrivee').value;
         const depart = card.querySelector('.date-depart').value;
-        const nbPersonnes = card.querySelector('.nb-personnes').value;
+        const nbPersonnesSelect = card.querySelector('.nb-personnes').value;
         const prixTotal = card.querySelector('.price-amount').textContent;
         
-        if (!arrivee || !depart || !nbPersonnes) {
+        if (!arrivee || !depart || !nbPersonnesSelect) {
             await showAlert('Veuillez sélectionner toutes les informations', 'error', false);
             return;
         }
@@ -1108,11 +1264,19 @@ h1 a:hover {
             studio: 'Le Studio'
         };
         
+        // Récupérer les options
+        const petitdejCheck = card.querySelector('.opt-petitdej-check');
+        const petitdejNb = card.querySelector('.opt-petitdej-nb');
+        const animalCheck = card.querySelector('.opt-animal');
+        const repasCheck = card.querySelector('.opt-repas-check');
+        const repasNb = card.querySelector('.opt-repas-nb');
+        const bebeCheck = card.querySelector('.opt-bebe');
+        
         document.getElementById('bookingSummary').innerHTML = `
             <strong>Logement :</strong> ${logementNames[logement]}<br>
             <strong>Du :</strong> ${new Date(arrivee).toLocaleDateString('fr-FR')} 
             <strong>au :</strong> ${new Date(depart).toLocaleDateString('fr-FR')}<br>
-            <strong>Personnes :</strong> ${nbPersonnes}<br>
+            <strong>Personnes :</strong> ${nbPersonnesSelect}<br>
             <strong>Prix total :</strong> ${prixTotal}
         `;
         
@@ -1120,12 +1284,12 @@ h1 a:hover {
             logement,
             arrivee,
             depart,
-            nbPersonnes,
+            nbPersonnes: nbPersonnesSelect,
             prixTotal,
-            petitdej: parseInt(card.querySelector('.opt-petitdej')?.value || 0),
-            animal: card.querySelector('.opt-animal')?.checked || false,
-            repas: parseInt(card.querySelector('.opt-repas')?.value || 0),
-            bebe: card.querySelector('.opt-bebe')?.checked || false
+            petitdej: petitdejCheck?.checked ? parseInt(petitdejNb?.value || 2) : 0,
+            animal: animalCheck?.checked || false,
+            repas: repasCheck?.checked ? parseInt(repasNb?.value || 2) : 0,
+            bebe: bebeCheck?.checked || false
         };
         
         // Cacher les onglets et les cartes
