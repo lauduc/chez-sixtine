@@ -842,6 +842,10 @@
         const prenomParam = urlParams.get('prenom');
         const emailParam = urlParams.get('email');
         const telParam = urlParams.get('tel');
+        const adresseParam = urlParams.get('adresse');
+        const codePostalParam = urlParams.get('code_postal');
+        const paysParam = urlParams.get('pays');
+        const villeParam = urlParams.get('ville');
         const petitdejParam = urlParams.get('petitdej');
         const animalParam = urlParams.get('animal');
         const repasParam = urlParams.get('repas');
@@ -1008,6 +1012,22 @@
         if (prenomParam) document.getElementById('prenom').value = decodeURIComponent(prenomParam);
         if (emailParam) document.getElementById('email').value = decodeURIComponent(emailParam);
         if (telParam) document.getElementById('telephone').value = decodeURIComponent(telParam);
+        if (adresseParam) document.getElementById('adresse').value = decodeURIComponent(adresseParam);
+        if (codePostalParam) document.getElementById('code_postal').value = decodeURIComponent(codePostalParam);
+        if (villeParam) document.getElementById('ville').value = decodeURIComponent(villeParam);
+        
+        // Traitement spécial pour le pays (select)
+        if (paysParam) {
+            const paysSelect = document.getElementById('pays');
+            const paysValue = decodeURIComponent(paysParam);
+            for (let i = 0; i < paysSelect.options.length; i++) {
+                if (paysSelect.options[i].value.toLowerCase() === paysValue.toLowerCase()) {
+                    paysSelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+        
         if (messageParam) document.getElementById('message').value = decodeURIComponent(messageParam);
 
         // ===== TRAITER LES PARAMÈTRES URL =====
