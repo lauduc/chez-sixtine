@@ -1057,27 +1057,64 @@
                     const repasNb = activeCard.querySelector('.opt-repas-nb');
                     const bebeCheck = activeCard.querySelector('.opt-bebe');
 
-                    if (petitdejParam && petitdejCheck && petitdejNb) {
-                        petitdejCheck.checked = true;
-                        petitdejNb.value = petitdejParam;
-                    }
-
-                   // Accepter '1', 'true', 'oui' ou 'yes' comme valeur valide pour activer l'option animal
-                    if (animalParam && (animalParam === '1' || animalParam.toLowerCase() === 'true' || animalParam.toLowerCase() === 'oui' || animalParam.toLowerCase() === 'yes')) {
-                     if (animalCheck) {
-                        animalCheck.checked = true;
+                    // Petit déjeuner
+                    if (petitdejParam) {
+                        const petitdejValue = parseInt(petitdejParam);
+                        if (!isNaN(petitdejValue) && petitdejValue > 0) {
+                            if (petitdejCheck && petitdejNb) {
+                                petitdejCheck.checked = true;
+                                petitdejNb.value = petitdejValue;
+                            }
+                        } else if (petitdejParam === '1' || petitdejParam.toLowerCase() === 'true' || 
+                                   petitdejParam.toLowerCase() === 'oui' || petitdejParam.toLowerCase() === 'yes') {
+                            if (petitdejCheck && petitdejNb) {
+                                petitdejCheck.checked = true;
+                                // Par défaut, mettre le nombre de personnes
+                                const nbPersonnes = nbPersonnesSelect ? 
+                                    (nbPersonnesSelect.value.includes('-') ? 
+                                        parseInt(nbPersonnesSelect.value.split('-')[0]) : 
+                                        parseInt(nbPersonnesSelect.value)) : 2;
+                                petitdejNb.value = nbPersonnes;
+                            }
                         }
                     }
 
-                    if (repasParam && repasCheck && repasNb) {
-                        repasCheck.checked = true;
-                        repasNb.value = repasParam;
+                    // Animal
+                    if (animalParam && (animalParam === '1' || animalParam.toLowerCase() === 'true' || 
+                                       animalParam.toLowerCase() === 'oui' || animalParam.toLowerCase() === 'yes')) {
+                        if (animalCheck) {
+                            animalCheck.checked = true;
+                        }
                     }
 
-                    if (bebeParam && (bebeParam === '1' || bebeParam.toLowerCase() === 'true' || bebeParam.toLowerCase() === 'oui' || bebeParam.toLowerCase() === 'yes')) {
-                    if (bebeCheck) {
-                        bebeCheck.checked = true;
+                    // Repas
+                    if (repasParam) {
+                        const repasValue = parseInt(repasParam);
+                        if (!isNaN(repasValue) && repasValue > 0) {
+                            if (repasCheck && repasNb) {
+                                repasCheck.checked = true;
+                                repasNb.value = repasValue;
+                            }
+                        } else if (repasParam === '1' || repasParam.toLowerCase() === 'true' || 
+                                   repasParam.toLowerCase() === 'oui' || repasParam.toLowerCase() === 'yes') {
+                            if (repasCheck && repasNb) {
+                                repasCheck.checked = true;
+                                // Par défaut, mettre le nombre de personnes
+                                const nbPersonnes = nbPersonnesSelect ? 
+                                    (nbPersonnesSelect.value.includes('-') ? 
+                                        parseInt(nbPersonnesSelect.value.split('-')[0]) : 
+                                        parseInt(nbPersonnesSelect.value)) : 2;
+                                repasNb.value = nbPersonnes;
+                            }
+                        }
                     }
+
+                    // Lit bébé
+                    if (bebeParam && (bebeParam === '1' || bebeParam.toLowerCase() === 'true' || 
+                                     bebeParam.toLowerCase() === 'oui' || bebeParam.toLowerCase() === 'yes')) {
+                        if (bebeCheck) {
+                            bebeCheck.checked = true;
+                        }
                     }
 
                     // Déclencher les événements pour recalculer le prix
