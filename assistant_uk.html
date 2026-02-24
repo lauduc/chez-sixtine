@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assistant Laurent - Chez Sixtine</title>
+  <style>
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    h1 a {
+      color: white;
+      text-decoration: none;
+      transition: opacity 0.3s;
+    }
+
+    h1 a:hover {
+      opacity: 0.8;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+
+    /* Chatbot container */
+    #chatbot-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 600px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    #chatbot-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    #chatbot-header h3 {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    /* Messages area */
+    #chatbot-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #f7f9fc;
+    }
+
+    .message {
+      margin-bottom: 12px;
+      display: flex;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.bot .message-content {
+      background: white;
+      color: #333;
+      border-radius: 16px 16px 16px 4px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 85%;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message.user .message-content {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 16px 16px 4px 16px;
+      padding: 12px 16px;
+      max-width: 85%;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      background: white;
+      border-radius: 16px 16px 16px 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: fit-content;
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      margin: 0 3px;
+      background: #667eea;
+      border-radius: 50%;
+      animation: blink 1.4s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+      40% { opacity: 1; transform: translateY(-3px); }
+    }
+
+    /* Input area */
+    #chatbot-input-area {
+      background: white;
+      border-top: 1px solid #e0e0e0;
+      padding: 16px;
+      display: flex;
+      gap: 10px;
+    }
+
+    #chatbot-input {
+      flex: 1;
+      border: 2px solid #ddd;
+      border-radius: 24px;
+      padding: 12px 18px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    #chatbot-input:focus {
+      border-color: #667eea;
+    }
+
+    #chatbot-send {
+      width: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    #chatbot-send:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    }
+
+    #chatbot-send:active {
+      transform: translateY(0);
+    }
+
+    #chatbot-send:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #chatbot-send svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    /* Error message */
+    .error-message {
+      background: #fee;
+      border-left: 4px solid #f44;
+      padding: 12px;
+      border-radius: 8px;
+      color: #c00;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    /* Back button */
+    .btn-home {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 15px 40px;
+      background: white;
+      color: #667eea;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1.1em;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      text-align: center;
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .btn-home:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8em;
+      }
+
+      #chatbot-container {
+        height: 70vh;
+      }
+
+      body {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><a href="https://chez-sixtine.com">🏡 Assistant Laurent</a></h1>
+    <p class="subtitle">Ask your questions about bookings, prices and availability</p>
+
+    <div id="chatbot-container">
+      <div id="chatbot-header">
+        <h3>💬 Chat with Laurent</h3>
+      </div>
+
+      <div id="chatbot-messages">
+        <div class="message bot">
+          <div class="message-content">Hello 👋 I'm Laurent, Sixtine's assistant. How can I help you? Would you like to book for specific dates? Information about prices, availability?</div>
+        </div>
+      </div>
+
+      <div id="chatbot-input-area">
+        <input id="chatbot-input" type="text" placeholder="Type your message..." autocomplete="off" />
+        <button id="chatbot-send" onclick="sendMessage(event)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <a href="https://chez-sixtine.com" class="btn-home">← Back to Chez Sixtine</a>
+  </div>
+
+  <script>
+    // 🔐 Configuration
+    const WEBHOOK_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chatbot-booking';
+    const API_KEY = 'X8ZR4CQrrRi6lcrV0tsbB2DpTOUFeJVgbG3E-rJr5HQ';
+    
+    // Conversation history
+    let conversationHistory = [];
+
+    function addMessage(text, isBot = false) {
+      const messagesContainer = document.getElementById('chatbot-messages');
+      const div = document.createElement('div');
+      div.className = 'message ' + (isBot ? 'bot' : 'user');
+      div.innerHTML = `<div class="message-content">${escapeHtml(text)}</div>`;
+      messagesContainer.appendChild(div);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      
+      // Add to history
+      conversationHistory.push({
+        role: isBot ? 'assistant' : 'user',
+        content: text
+      });
+      
+      // Keep only the last 10 messages
+      if (conversationHistory.length > 10) {
+        conversationHistory = conversationHistory.slice(-10);
+      }
+    }
+
+    function addErrorMessage(text) {
+      const messagesContainer = document.getElementById('chatbot-messages');
+      const div = document.createElement('div');
+      div.className = 'error-message';
+      div.textContent = '❌ ' + text;
+      messagesContainer.appendChild(div);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      
+      // Remove after 5 seconds
+      setTimeout(() => div.remove(), 5000);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      let html = div.innerHTML;
+      
+      // Transform URLs into clickable links
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      html = html.replace(urlRegex, '<a href="$1" target="_blank" style="color: #667eea; text-decoration: underline;">$1</a>');
+      
+      // Transform phone numbers into clickable links
+      const phoneRegex = /(\+?\d[\d\s]{8,})/g;
+      html = html.replace(phoneRegex, '<a href="tel:$1" style="color: #667eea; text-decoration: underline;">$1</a>');
+      
+      return html;
+    }
+
+    function showTypingIndicator() {
+      const messagesContainer = document.getElementById('chatbot-messages');
+      const indicator = document.createElement('div');
+      indicator.className = 'message bot';
+      indicator.id = 'typing-indicator';
+      indicator.innerHTML = `
+        <div class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      `;
+      messagesContainer.appendChild(indicator);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+      const indicator = document.getElementById('typing-indicator');
+      if (indicator) indicator.remove();
+    }
+
+    async function sendMessage(e) {
+      e.preventDefault();
+      
+      const input = document.getElementById('chatbot-input');
+      const sendButton = document.getElementById('chatbot-send');
+      const message = input.value.trim();
+      
+      if (!message) return;
+
+      // Disable input while sending
+      input.disabled = true;
+      sendButton.disabled = true;
+      
+      // Display user message
+      addMessage(message, false);
+      input.value = '';
+
+      // Show typing indicator
+      showTypingIndicator();
+      
+      try {
+        const res = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-API-Key': API_KEY
+          },
+          body: JSON.stringify({ 
+            message, 
+            history: conversationHistory.slice(-6), // Send last 6 messages
+            source: 'website-chatbot', 
+            timestamp: new Date().toISOString() 
+          })
+        });
+
+        hideTypingIndicator();
+
+        if (!res.ok) {
+          if (res.status === 401) {
+            throw new Error('Authentication failed. Please check the configuration.');
+          }
+          throw new Error(`Error ${res.status}: ${res.statusText}`);
+        }
+
+        const data = await res.json();
+        
+        if (data.success && data.response) {
+          addMessage(data.response, true);
+        } else {
+          throw new Error('Invalid server response');
+        }
+        
+      } catch (err) {
+        console.error('Error:', err);
+        hideTypingIndicator();
+        addErrorMessage(err.message || "An error occurred. Please try again.");
+      } finally {
+        // Re-enable input
+        input.disabled = false;
+        sendButton.disabled = false;
+        input.focus();
+      }
+    }
+
+    // Allow sending with Enter key
+    document.getElementById('chatbot-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage(e);
+      }
+    });
+
+    // Focus on input on load
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('chatbot-input').focus();
+    });
+  </script>
+</body>
+</html>
