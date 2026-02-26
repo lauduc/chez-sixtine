@@ -5,8 +5,8 @@ let anneeActuelle = new Date().getFullYear();
 
 // Configuration GitHub - À personnaliser
 const GITHUB_CONFIG = {
-    owner: 'VOTRE_NOM_UTILISATEUR', // Remplacez par votre username GitHub
-    repo: 'NOM_DU_REPO',            // Remplacez par le nom de votre repo
+    owner: 'lauduc', // Remplacez par votre username GitHub
+    repo: 'chez-sixtine',            // Remplacez par le nom de votre repo
     branch: 'main',
     token: null // Optionnel: pour l'authentification si repo privé
 };
