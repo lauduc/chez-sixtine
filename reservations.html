@@ -672,10 +672,12 @@
                 <div class="form-group">
                     <label>Configuration / Setup</label>
                     <select class="nb-personnes">
+                        
                         <option value="">Sélectionner / Select...</option>
-                        <option value="1-120">1 personne (lit 120) / 1 person (bed 120cm)</option>
-                        <option value="2-140">1-2 personnes (lit 140) / 1-2 people (bed 140cm)</option>
-                        <option value="3-combo">3 personnes (lit 120 + lit 140) / 3 people (bed 120cm + bed 140cm)</option>
+                        <option value="1-160">1-2 personnes (lit 160) / 1-2 people (bed 160cm)</option>
+                        <option value="2-160-120">2-3 personnes (lit 160 + 120) / 2-3 people (bed 160cm + Bed 120cm)</option>
+                        <option value="3-160-120-140">5 personnes (lit 160 + 120 + 140) / 5 persons (bed 160 + 120 + 140cm)</option>
+                        
                     </select>
                 </div>
                 
@@ -816,9 +818,9 @@
             3: { couchageSupp: 30 }
         },
         studio: {
-            '1-120': { semaine: 95, weekend: 99 },
-            '2-140': { semaine: 105, weekend: 109 },
-            '3-combo': { semaine: 125, weekend: 129 }
+            '1-160': { semaine: 95, weekend: 99 },
+            '2-160-120': { semaine: 125, weekend: 129 },
+            '3-160-120-140': { semaine: 155, weekend: 159 }
         }
     };
     
