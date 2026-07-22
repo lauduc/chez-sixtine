@@ -655,7 +655,7 @@
         <div class="logement-card" data-logement="studio">
             <div class="logement-header">
                 <div class="logement-name">Le Studio</div>
-                <div class="logement-capacity">1 à 3 personnes / 1 to 3 people</div>
+                <div class="logement-capacity">1 à 5 personnes / 1 to 5 people</div>
             </div>
             
             <div class="price-calculator">
@@ -672,15 +672,14 @@
                 <div class="form-group">
                     <label>Configuration / Setup</label>
                     <select class="nb-personnes">
-                        
                         <option value="">Sélectionner / Select...</option>
                         <option value="1-160">1 personne (lit 160cm) / 1 people (bed 160cm)</option>
-                        <option value="2-160">2 personnes(lit 160cm) / 2 people (bed 160cm)</option>
-                        <option value="2-160-120">2 personnes (lits 160+120cm) / 2 people(bed 160+120cm)</option>
-                        <option value="3-160-120">3 personnes (lits 160+120cm) / 3 people(beds 160+120cm)</option>
-                        <option value="4-160-140">4 personnes(lits 160+140cm) / 4 people(beds 160+140cm)</option>
-                        <option value="5-160-140-120">5 personnes(lits 160+140+120cm) / 5 people(beds 160+140+120cm)</option>
-                        
+                        <option value="2-160">2 personnes (lit 160cm) / 2 people (bed 160cm)</option>
+                        <option value="2-160-120">2 personnes (lits 160+120cm) / 2 people (beds 160+120cm)</option>
+                        <option value="3-160-120">3 personnes (lits 160+120cm) / 3 people (beds 160+120cm)</option>
+                        <option value="3-160-140">3 personnes (lits 160+140cm) / 3 people (beds 160+140cm)</option>
+                        <option value="4-160-140">4 personnes (lits 160+140cm) / 4 people (beds 160+140cm)</option>
+                        <option value="5-160-140-120">5 personnes (lits 160+140+120cm) / 5 people (beds 160+140+120cm)</option>
                     </select>
                 </div>
                 
@@ -806,6 +805,7 @@
     const CHECK_DISPO_URL = 'https://n8n.srv1040760.hstgr.cloud/webhook/chez-sixtine-check-dispo';
     
     // Grilles tarifaires
+    // ⚠️ Studio : les clés doivent être IDENTIQUES aux "value" des <option> du select
     const PRIX = {
         tour: {
             2: { semaine: 85, weekend: 89 },
@@ -825,6 +825,7 @@
             '2-160': { semaine: 95, weekend: 99 },
             '2-160-120': { semaine: 125, weekend: 129 },
             '3-160-120': { semaine: 125, weekend: 129 },
+            '3-160-140': { semaine: 135, weekend: 139 },
             '4-160-140': { semaine: 135, weekend: 139 },
             '5-160-140-120': { semaine: 155, weekend: 159 }
         }
