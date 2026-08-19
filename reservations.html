@@ -513,6 +513,19 @@
                         <input type="checkbox" class="opt-bebe" id="tour-bebe" value="20">
                         <label for="tour-bebe">Lit bébé / Baby crib (20€)</label>
                     </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="opt-massage-check" id="tour-massage">
+                        <label for="tour-massage">Massage / Massage</label>
+                    </div>
+                    <div class="checkbox-group opt-massage-details" style="display:none; margin-top:-5px; padding-left:28px;">
+                        <select class="opt-massage-duree" style="width:auto; flex:1;">
+                            <option value="30">30 min (zone spécifique) - 40€</option>
+                            <option value="60">1 heure - 65€</option>
+                            <option value="90">1h30 - 90€</option>
+                        </select>
+                        <input type="number" class="opt-massage-nb" min="1" max="10" value="1" placeholder="Nb" style="width: 70px;">
+                    </div>
                 </div>
                 
                 <div class="price-display">
@@ -576,6 +589,19 @@
                         <input type="checkbox" class="opt-bebe" id="drome-bebe" value="20">
                         <label for="drome-bebe">Lit bébé / Baby crib (20€)</label>
                     </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="opt-massage-check" id="drome-massage">
+                        <label for="drome-massage">Massage / Massage</label>
+                    </div>
+                    <div class="checkbox-group opt-massage-details" style="display:none; margin-top:-5px; padding-left:28px;">
+                        <select class="opt-massage-duree" style="width:auto; flex:1;">
+                            <option value="30">30 min (zone spécifique) - 40€</option>
+                            <option value="60">1 heure - 65€</option>
+                            <option value="90">1h30 - 90€</option>
+                        </select>
+                        <input type="number" class="opt-massage-nb" min="1" max="10" value="1" placeholder="Nb" style="width: 70px;">
+                    </div>
                 </div>
                 
                 <div class="price-display">
@@ -638,6 +664,19 @@
                     <div class="checkbox-group">
                         <input type="checkbox" class="opt-bebe" id="duchesse-bebe" value="20">
                         <label for="duchesse-bebe">Lit bébé / Baby crib (20€)</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="opt-massage-check" id="duchesse-massage">
+                        <label for="duchesse-massage">Massage / Massage</label>
+                    </div>
+                    <div class="checkbox-group opt-massage-details" style="display:none; margin-top:-5px; padding-left:28px;">
+                        <select class="opt-massage-duree" style="width:auto; flex:1;">
+                            <option value="30">30 min (zone spécifique) - 40€</option>
+                            <option value="60">1 heure - 65€</option>
+                            <option value="90">1h30 - 90€</option>
+                        </select>
+                        <input type="number" class="opt-massage-nb" min="1" max="10" value="1" placeholder="Nb" style="width: 70px;">
                     </div>
                 </div>
                 
@@ -706,6 +745,19 @@
                     <div class="checkbox-group">
                         <input type="checkbox" class="opt-bebe" id="studio-bebe" value="20">
                         <label for="studio-bebe">Lit bébé / Baby crib (20€)</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="opt-massage-check" id="studio-massage">
+                        <label for="studio-massage">Massage / Massage</label>
+                    </div>
+                    <div class="checkbox-group opt-massage-details" style="display:none; margin-top:-5px; padding-left:28px;">
+                        <select class="opt-massage-duree" style="width:auto; flex:1;">
+                            <option value="30">30 min (zone spécifique) - 40€</option>
+                            <option value="60">1 heure - 65€</option>
+                            <option value="90">1h30 - 90€</option>
+                        </select>
+                        <input type="number" class="opt-massage-nb" min="1" max="10" value="1" placeholder="Nb" style="width: 70px;">
                     </div>
                 </div>
                 
@@ -832,6 +884,18 @@
     };
     
     const TAXE_SEJOUR = 0.70;
+    
+    // Tarifs massage par durée (en minutes)
+    const MASSAGE_PRIX = {
+        30: 40,
+        60: 65,
+        90: 90
+    };
+    const MASSAGE_LABELS = {
+        30: '30min',
+        60: '1h',
+        90: '1h30'
+    };
     
     // Initialisation
     document.addEventListener('DOMContentLoaded', () => {
@@ -998,6 +1062,25 @@
             
             if (bebeCheck) {
                 bebeCheck.addEventListener('change', () => calculatePrice(card, logement));
+            }
+            
+            // Gestion de l'option massage
+            const massageCheck = card.querySelector('.opt-massage-check');
+            const massageDetails = card.querySelector('.opt-massage-details');
+            const massageDuree = card.querySelector('.opt-massage-duree');
+            const massageNb = card.querySelector('.opt-massage-nb');
+            
+            if (massageCheck && massageDetails) {
+                massageCheck.addEventListener('change', function() {
+                    massageDetails.style.display = this.checked ? 'flex' : 'none';
+                    calculatePrice(card, logement);
+                });
+            }
+            if (massageDuree) {
+                massageDuree.addEventListener('change', () => calculatePrice(card, logement));
+            }
+            if (massageNb) {
+                massageNb.addEventListener('input', () => calculatePrice(card, logement));
             }
             
             // Initialiser le prix (avec un délai pour être sûr que le DOM est prêt)
@@ -1285,6 +1368,18 @@
             details.push('Lit bébé: 20€');
         }
         
+        const massageCheck = card.querySelector('.opt-massage-check');
+        const massageDuree = card.querySelector('.opt-massage-duree');
+        const massageNb = card.querySelector('.opt-massage-nb');
+        if (massageCheck && massageCheck.checked) {
+            const duree = massageDuree?.value || '30';
+            const prixUnitaire = MASSAGE_PRIX[duree] || 0;
+            const nb = parseInt(massageNb?.value || 1);
+            const prixMassage = nb * prixUnitaire;
+            prixTotal += prixMassage;
+            details.push(`${nb} massage(s) ${MASSAGE_LABELS[duree]}: ${prixMassage}€`);
+        }
+        
         if (priceDisplay) priceDisplay.textContent = `${prixTotal.toFixed(2)}€`;
         if (breakdown) breakdown.textContent = details.join(' • ');
         if (btnReserver) btnReserver.disabled = false;
@@ -1342,6 +1437,9 @@
         const repasCheck = card.querySelector('.opt-repas-check');
         const repasNb = card.querySelector('.opt-repas-nb');
         const bebeCheck = card.querySelector('.opt-bebe');
+        const massageCheck = card.querySelector('.opt-massage-check');
+        const massageDuree = card.querySelector('.opt-massage-duree');
+        const massageNb = card.querySelector('.opt-massage-nb');
         
         document.getElementById('bookingSummary').innerHTML = `
             <strong>Logement :</strong> ${logementNames[logement]}<br>
@@ -1360,7 +1458,11 @@
             petitdej: petitdejCheck?.checked ? parseInt(petitdejNb?.value || 2) : 0,
             animal: animalCheck?.checked || false,
             repas: repasCheck?.checked ? parseInt(repasNb?.value || 2) : 0,
-            bebe: bebeCheck?.checked || false
+            bebe: bebeCheck?.checked || false,
+            massage: massageCheck?.checked ? {
+                duree: parseInt(massageDuree?.value || 30),
+                nb: parseInt(massageNb?.value || 1)
+            } : null
         };
         
         // Cacher les onglets et les cartes
