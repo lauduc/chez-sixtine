@@ -1461,7 +1461,8 @@
             bebe: bebeCheck?.checked || false,
             massage: massageCheck?.checked ? {
                 duree: parseInt(massageDuree?.value || 30),
-                nb: parseInt(massageNb?.value || 1)
+                nb: parseInt(massageNb?.value || 1),
+                prix: parseInt(massageNb?.value || 1) * (MASSAGE_PRIX[parseInt(massageDuree?.value || 30)] || 0)
             } : null
         };
         
