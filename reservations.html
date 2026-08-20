@@ -499,8 +499,9 @@
                     </div>
                     
                     <div class="checkbox-group">
-                        <input type="checkbox" class="opt-animal" id="tour-animal" value="10">
-                        <label for="tour-animal">Forfait Animal / Pet fee (10€)</label>
+                        <input type="checkbox" class="opt-animal-check" id="tour-animal">
+                        <label for="tour-animal">Animal / Pet (10€/animal)</label>
+                        <input type="number" class="opt-animal-nb" min="0" max="10" value="0" placeholder="Nb" style="width: 70px;">
                     </div>
                     
                     <div class="checkbox-group">
@@ -575,8 +576,9 @@
                     </div>
                     
                     <div class="checkbox-group">
-                        <input type="checkbox" class="opt-animal" id="drome-animal" value="10">
-                        <label for="drome-animal">Forfait Animal / Pet fee (10€)</label>
+                        <input type="checkbox" class="opt-animal-check" id="drome-animal">
+                        <label for="drome-animal">Animal / Pet (10€/animal)</label>
+                        <input type="number" class="opt-animal-nb" min="0" max="10" value="0" placeholder="Nb" style="width: 70px;">
                     </div>
                     
                     <div class="checkbox-group">
@@ -651,8 +653,9 @@
                     </div>
                     
                     <div class="checkbox-group">
-                        <input type="checkbox" class="opt-animal" id="duchesse-animal" value="10">
-                        <label for="duchesse-animal">Forfait Animal / Pet fee (10€)</label>
+                        <input type="checkbox" class="opt-animal-check" id="duchesse-animal">
+                        <label for="duchesse-animal">Animal / Pet (10€/animal)</label>
+                        <input type="number" class="opt-animal-nb" min="0" max="10" value="0" placeholder="Nb" style="width: 70px;">
                     </div>
                     
                     <div class="checkbox-group">
@@ -732,8 +735,9 @@
                     </div>
                     
                     <div class="checkbox-group">
-                        <input type="checkbox" class="opt-animal" id="studio-animal" value="10">
-                        <label for="studio-animal">Forfait Animal / Pet fee (10€)</label>
+                        <input type="checkbox" class="opt-animal-check" id="studio-animal">
+                        <label for="studio-animal">Animal / Pet (10€/animal)</label>
+                        <input type="number" class="opt-animal-nb" min="0" max="10" value="0" placeholder="Nb" style="width: 70px;">
                     </div>
                     
                     <div class="checkbox-group">
@@ -885,6 +889,9 @@
     
     const TAXE_SEJOUR = 0.70;
     
+    // Tarif animal (par animal)
+    const PRIX_ANIMAL = 10;
+    
     // Tarifs massage par durée (en minutes)
     const MASSAGE_PRIX = {
         30: 40,
@@ -1029,7 +1036,8 @@
             // Gestion des options avec cases à cocher et nombres
             const petitdejCheck = card.querySelector('.opt-petitdej-check');
             const petitdejNb = card.querySelector('.opt-petitdej-nb');
-            const animalCheck = card.querySelector('.opt-animal');
+            const animalCheck = card.querySelector('.opt-animal-check');
+            const animalNb = card.querySelector('.opt-animal-nb');
             const repasCheck = card.querySelector('.opt-repas-check');
             const repasNb = card.querySelector('.opt-repas-nb');
             const bebeCheck = card.querySelector('.opt-bebe');
@@ -1045,6 +1053,21 @@
                 });
             }
             
+            if (animalCheck && animalNb) {
+                animalCheck.addEventListener('change', function() {
+                    if (!this.checked) {
+                        animalNb.value = 0;
+                    } else if (parseInt(animalNb.value) === 0) {
+                        animalNb.value = 1;
+                    }
+                    calculatePrice(card, logement);
+                });
+                animalNb.addEventListener('input', function() {
+                    if (parseInt(this.value) > 0) animalCheck.checked = true;
+                    calculatePrice(card, logement);
+                });
+            }
+            
             if (repasCheck && repasNb) {
                 repasCheck.addEventListener('change', function() {
                     if (!this.checked) repasNb.value = 0;
@@ -1054,10 +1077,6 @@
                     if (parseInt(this.value) > 0) repasCheck.checked = true;
                     calculatePrice(card, logement);
                 });
-            }
-            
-            if (animalCheck) {
-                animalCheck.addEventListener('change', () => calculatePrice(card, logement));
             }
             
             if (bebeCheck) {
@@ -1164,7 +1183,8 @@
                     // Remplir les options
                     const petitdejCheck = activeCard.querySelector('.opt-petitdej-check');
                     const petitdejNb = activeCard.querySelector('.opt-petitdej-nb');
-                    const animalCheck = activeCard.querySelector('.opt-animal');
+                    const animalCheck = activeCard.querySelector('.opt-animal-check');
+                    const animalNb = activeCard.querySelector('.opt-animal-nb');
                     const repasCheck = activeCard.querySelector('.opt-repas-check');
                     const repasNb = activeCard.querySelector('.opt-repas-nb');
                     const bebeCheck = activeCard.querySelector('.opt-bebe');
@@ -1192,10 +1212,19 @@
                     }
 
                     // Animal
-                    if (animalParam && (animalParam === '1' || animalParam.toLowerCase() === 'true' || 
-                                       animalParam.toLowerCase() === 'oui' || animalParam.toLowerCase() === 'yes')) {
-                        if (animalCheck) {
-                            animalCheck.checked = true;
+                    if (animalParam) {
+                        const animalValue = parseInt(animalParam);
+                        if (!isNaN(animalValue) && animalValue > 0) {
+                            if (animalCheck && animalNb) {
+                                animalCheck.checked = true;
+                                animalNb.value = animalValue;
+                            }
+                        } else if (animalParam === '1' || animalParam.toLowerCase() === 'true' || 
+                                   animalParam.toLowerCase() === 'oui' || animalParam.toLowerCase() === 'yes') {
+                            if (animalCheck && animalNb) {
+                                animalCheck.checked = true;
+                                animalNb.value = 1;
+                            }
                         }
                     }
 
@@ -1347,10 +1376,13 @@
             details.push(`${nb} petit déj.: ${prixPetitDej}€`);
         }
         
-        const animalCheck = card.querySelector('.opt-animal');
+        const animalCheck = card.querySelector('.opt-animal-check');
+        const animalNb = card.querySelector('.opt-animal-nb');
         if (animalCheck && animalCheck.checked) {
-            prixTotal += 10;
-            details.push('Forfait animal: 10€');
+            const nb = parseInt(animalNb?.value || 1);
+            const prixAnimal = nb * PRIX_ANIMAL;
+            prixTotal += prixAnimal;
+            details.push(`${nb} animal${nb > 1 ? 'aux' : ''}: ${prixAnimal}€`);
         }
         
         const repasCheck = card.querySelector('.opt-repas-check');
@@ -1433,7 +1465,8 @@
         // Récupérer les options
         const petitdejCheck = card.querySelector('.opt-petitdej-check');
         const petitdejNb = card.querySelector('.opt-petitdej-nb');
-        const animalCheck = card.querySelector('.opt-animal');
+        const animalCheck = card.querySelector('.opt-animal-check');
+        const animalNb = card.querySelector('.opt-animal-nb');
         const repasCheck = card.querySelector('.opt-repas-check');
         const repasNb = card.querySelector('.opt-repas-nb');
         const bebeCheck = card.querySelector('.opt-bebe');
@@ -1456,7 +1489,7 @@
             nbPersonnes: nbPersonnesSelect,
             prixTotal,
             petitdej: petitdejCheck?.checked ? parseInt(petitdejNb?.value || 2) : 0,
-            animal: animalCheck?.checked || false,
+            animal: animalCheck?.checked ? parseInt(animalNb?.value || 1) : 0,
             repas: repasCheck?.checked ? parseInt(repasNb?.value || 2) : 0,
             bebe: bebeCheck?.checked || false,
             massage: massageCheck?.checked ? {
